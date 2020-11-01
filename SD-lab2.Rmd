@@ -1,0 +1,113 @@
+---
+title: "Știința Datelor Laborator 2"
+output: html_notebook
+---
+
+# Mulțimi
+
+## Definiții matematice
+
+## Diagrame Venn
+
+## Operații
+
+### Intersecție
+
+### Reuniune
+
+### Diferența
+
+### Mulțimea Vidă
+
+## Test Pozitiv/Negativ
+
+### Definiții matematice
+
+### Matrice de confuzie (table() used maybe)
+
+
+
+# Intervale
+
+## Valoare absolută
+
+## Inegalități
+
+## Tipuri de interval
+
+## Centrarea mediei
+
+
+
+# Termeni Statistici
+
+## Media
+
+## Variația
+
+## Deviația Standard
+
+## Modulul
+
+## Cuantile, Mediană
+
+
+# Funcții
+
+## Coordonate Carteziene
+
+### Axele carteziene
+
+### Cadrane
+
+### Ecuația unei drepte
+
+#### Intersecțiile cu axele
+
+### Graficul Funcției
+
+### Funcții strict monotone
+
+### Funcții inversabile
+
+### Derivata/Tagenta
+
+### Formă xxponențială/logaritmică
+
+#### Rată de creștere discretă
+
+#### Rată de creștere continuă
+
+##### Utilitate : Exemplu dobândă bancă
+
+## Bibloteci grafice --- posibil de transferat din lab 3
+
+# Probabilități
+
+## Definiția unei probabilități
+
+## Distribuție de probabilități/Principiul Indiferenței
+
+## Operații
+
+### Și
+
+### Sau
+
+### Dependența
+
+#### Regula Produsului
+
+#### Regula Sumei
+
+#### Teorema 1
+
+#### Corolar Teorema 1 + Regula Sumei
+
+#### Teorema 2
+
+#### Teorema 3
+
+## Utilitate: Test Covid
+
+## Utilitate: Multiple IDS

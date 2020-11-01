@@ -1,0 +1,133 @@
+---
+title: "Știința Datelor Laborator 3"
+output: html_notebook
+---
+
+# Colectare
+
+## Descarcare fisiere
+
+## Fisiere locale
+
+### TXT format
+
+### CSV format
+
+### XLSX format
+
+### XML format
+
+### JSON format
+
+## Baze de date
+
+### RMySql
+
+## Pagini Web
+
+### url
+
+### xml
+
+### httr
+
+## Interfață de programare a aplicațiilor
+
+### Facebook
+
+### Twitter
+
+### Google 
+
+### Github
+
+## Alte Surse
+
+### Arhive
+
+### Alte Limbaje
+
+### Imagini
+
+### Hărți
+
+### Muzică
+
+
+
+
+# Filtrare
+
+## Descriere Filtrare
+
+## data.frame
+
+## data.table
+
+## Biblioteca dplyr
+
+### select
+
+### filter
+
+### arrange
+
+### rename
+
+### mutate
+
+### summarise
+
+### operatorul %>%
+
+## Variabile Text
+
+## Variabile Data/Timp Biblioteca lubridate
+
+
+
+
+# Structurare
+
+## Descriere Structurare
+
+### Documentare proces
+
+### Cele 5 probleme
+
+## Biblioteca tidyr
+
+### gather
+
+### spread
+
+### drop_na
+
+### separate
+
+### separate_rows
+
+### unite
+
+
+
+
+# Descriere - posibil dus în laboratorul 2
+
+## Detalii Text
+
+## Detalii Grafice - biblioteca ggplot2
+
+### primitive
+
+### distribuție variabilă
+
+### două variabile continue
+
+### variabile discretă-continuă
+
+### variabile discretă-discretă
+
+### distribuție două variabile continue
+
+### hărți

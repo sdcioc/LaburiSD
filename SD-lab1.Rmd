@@ -1,0 +1,480 @@
+---
+title: "Știința Datelor Laborator 1"
+output: html_notebook
+---
+# ȘD - Scop
+Scopul laborataorelor de Știința Datelor este formarea următoarelor capacități:
+
+- Matematice
+- Programare
+- Procesare a datelor
+- De cercetare
+
+## Parcurs laborataore ȘD
+Laborataorelor vor fi împărțite astfel:
+
+- Lab 1 Limbajul R – abilități de programare
+- Lab 2 Matematică – abilități matematice necesare
+- Lab 3 Colectarea, filtrarea, ordonarea și descrierea datelor - abilități de procesare a datelor
+- Lab 4 Explorarea, inferența și corelarea datelor - abilități de cercetare
+- Lab 5 Predicția, cauzalitatea și mecanicism datelor - abilități de cercetare
+
+## Limbajul R
+expression(c^2 == a[1]^2 + b[1]^2)
+$c^2 == a[1]^2 + b[1]^2$
+
+### Istorie
+R se trage din limbajul S creat în 1976 la BELL special pentru analiză statistică. Acesta a fost făcut în Fortran. Echivalentul lui din ziua de astăzi este Splus care este propritar. Dezvoltarea R a început în 1992 și s-a terminat odată cu nașterea R pe 29 februarie 2000 . Avantajul lui este că e open-source și a transpus multe părți din Fortran în C, putând avea o dezvoltare mai ușoară decât Splus. În ziua de astăzi este considerat un limbaj statistic și cel mai mai specific dintre cele folosite în statistică.
+
+### Părți Importante
+Părți componenete importante ale limbajului. IDE de dezvoltare R Studio oferă consolă, editor de fișiere, incorporează managementul de pachete, graficele, documentația. CRAN este arhiva de pachete pentru R.  Rd este un mark-up asemănător latext pentru R în care sunt făcute docmentațiile funcțiilor R. R conține foarte multe seturi de date incorporate precum celebrele iris și mtcars. Putem apela docuemntația pentru o funcție cu ?functie.  Are undepanator incorporat foart ușor de utilizat, asemănător celui din visual studio code.
+
+#### RStudio
+a
+
+#### Cran
+b
+
+#### RD - Documentație ?
+c
+
+#### Seturi de date
+d
+
+#### Depanator
+e
+
+
+### Tipuri de bază - Clase atomice
+
+Înainte să intrăm în detalii operatorul de atribuire în R este ```<-```, ```print``` este o funcție de afișare a unui obiect, iar ```class``` este o funcție ce returnează tipul obiectului.
+
+#### Caracter
+Primul tip de bază este acela de caracter reprezentând caractere sub formă de unicode.
+```{r}
+a <- 'a'
+print(a)
+class(a)
+```
+#### Număr real
+Numere reale sunt reprezentate prin clasa numeric. ele sunt stocate sub forma IEEE 754 double.
+```{r}
+a <- 1.3
+print(a)
+class(a)
+```
+#### Număr Întreg
+Numere intregi necesită litera L ca sufix în notare. Ele sunt memeorate pe 32 de biți.
+```{r}
+a <- 1L
+print(a)
+class(a)
+```
+#### Număr complex
+Numerele complexe sunt reținute ca 2 valori IEEE 754 double.
+```{r}
+a <- 1+1i
+print(a)
+class(a)
+```
+#### Element logic
+Elemente logice au două valori TRUE și FALSE.
+```{r}
+a <- TRUE
+print(a)
+class(a)
+summary(a)
+```
+
+### Clase de bază
+
+#### Vector
+Prima clasă de bază este Vector. Aceasta poate stoca mai multe elemente de același tip sau clasă.
+```{r}
+a <- c(1,2,3)
+print(a)
+class(a)
+
+b <- c('a','b','c')
+print(b)
+class(b)
+summary(b)
+```
+În caz de folosire a mai multor tipuri se va alege cel mai cuprinzător dintre ele. Prin cuprinzător se referă la tipul la care tuturor celălalte li se poate face conversia.
+```{r}
+a <- c(1,'a',3L,TRUE)
+print(a)
+class(a)
+a[4] == TRUE
+summary(a)
+```
+
+#### Listă
+Dacă vrem să punem într-o grupare tipuri diferite putem folosi clasa listă.
+```{r}
+a <- list(1,'a',3L,TRUE)
+print(a)
+class(a)
+a[4] == TRUE
+summary(a)
+```
+
+#### Matrice
+Matricea asemenea vectoriilor poate avea doar elemente de același tip, dar este pe două dimensiuni. 
+```{r}
+a <- matrix(c('a','b','c','d','e','f'),nrow=2,ncol=3)
+print(a)
+class(a)
+summary(a)
+```
+
+#### Cadru de date
+Cadrul de date este o listă de vectori de lungimi egale.
+```{r}
+a <- data.frame(c('a','b','c','d','e','f'),1:6)
+print(a)
+class(a)
+summary(a)
+a <- data.frame(a=c('a','b','c','d','e','f'),b=1:6)
+print(a)
+class(a)
+summary(a)
+```
+
+#### Factori
+O clasă specială este cea de factori. Atunci când avem valori text într-un vector finite ca diversitate. Pentru îmbunătățirea performanței putem transform în factori. Fiecare valaore textuala va primi o reprezentare numerică 1,2 ... .
+```{r}
+a <- c('a','b','c','d','e','f')
+print(a)
+class(a)
+summary(a)
+b <- factor(a)
+print(b)
+class(b)
+summary(b)
+```
+
+### Operații
+Operații în interiorul R sunt asemănătoare celor din limbaje obișnuite, dar în același timp există și operații vectoriale precum în octave.
+
+#### Operații simple
+```{r}
+a <- 1
+b <- 2
+a+b
+a/b
+a%%b
+a-b
+a*b
+a<b
+a==b
+a>b
+```
+
+#### Operații vectoriale
+```{r}
+1:6
+a <- c(1,2,3)
+b <- c(4,5,6)
+a+b
+a/b
+a%%b
+a-b
+a*b
+a*3
+a<b
+a==b
+a>b
+a <- matrix(1:6,nrow=2,ncol=3)
+b <- matrix(11:6,nrow=2,ncol=3)
+a+b
+a/b
+a%%b
+a-b
+a*b
+a*4
+a<b
+a==b
+a>b
+a <- matrix(c(1:4),nrow=2,ncol=2)
+b <- matrix(c(7:10),nrow=2,ncol=2)
+a%*%b
+```
+### Subnetare
+
+Un lucru important în știința datelor este selectarea unor fragmente din date. Pentru
+asta avem diferiți opratori pentru a subneta.
+
+```{r}
+?summary
+```
+
+#### Operatorul []
+Operatorul $[]$ returnează un subset conform condițiie din interior având aceași clasă ca obiectul inițial.
+```{r}
+a <- list('a',1,'c',4,'e',6)
+print(a[1])
+class(a[1])
+summary(a[1])
+```
+Se pot folosi indecși negativi care reprezintă ce elemente să nu fie luate în considerare
+```{r}
+a <- list('a',1,'c',4,'e',6)
+print(a[-1])
+```
+#### Operatorul [[]] și $
+Operatorii $[[]]$ și $\$$ sunt asemănători cu operatorul $[]$ doar că valoarea de return vor avea clasa elementului.
+```{r}
+a <- list('a',1,'c',4,'e',6)
+print(a[[1]])
+class(a[[1]])
+summary(a[[1]])
+```
+#### Subnetare Logică
+În mod implicit condiția din interiorul operatoriilor se referă la indecși selectatți, dar în același timp poate fi un vector de elemente logice
+```{r}
+a <- 1:6
+print(a[a<3])
+a <- 6:1
+print(a)
+print(sort(a))
+print(order(a))
+print(a[order(a)])
+```
+#### NA/NAN/Inf
+În R există anumite valori speciale pe care nu dorim să le considerăm în opreațiile noastre asupra datelor.
+```{r}
+a <- list('a',1,3,NA,NaN,Inf)
+b <- c(5,1,3,NA,NaN,Inf)
+d <- c('a',1,3,NA,NaN,Inf)
+print(a)
+0/0
+Inf-Inf
+NA + 1
+NA * 0
+NaN * 0
+Inf * 0
+NA==NaN
+is.na(a)
+is.nan(b)
+is.infinite(b)
+is.nan(d)
+is.infinite(d)
+is.nan(NaN)
+is.infinite(Inf)
+```
+### Secvențe de Control
+Ca în majoritatea limbajelor R deține secvențe de control care nu sunt indicate spre utilizare
+doar ca ultim resort când nu putem folosi operații vectoriale sau funcții predefinite.
+#### IF
+if (condiție1) {} else if (condiție2) {} else {}
+```{r}
+a <- 2
+if (a<1) {print(a*2)} else if (a>3) {print(a*3)} else {print(a/2)}
+```
+#### FOR
+for(x in X) {} – poate fi utilizat next
+```{r}
+a <- 1:6
+for(elem in a) {
+  if(elem<3) next
+  print(elem)
+}
+```
+```{r}
+for(elem in a) {
+  print(elem)
+}
+```
+```{r}
+for(elem in a) {
+  if(elem==3) break
+  print(elem)
+}
+```
+#### WHILE
+while(condiție1) {}
+```{r}
+a <- 2
+b <- 4
+while(a<b) {
+  a <- a+2
+  b <- b+1
+}
+print(a)
+```
+#### REPEAT
+repeat {} – utilizare break
+```{r}
+a <- 2
+b <- 4
+repeat {
+  a <- a+2
+  b <- b+1
+  if(a>=b) {
+    break
+  }
+}
+print(a)
+```
+### Funcții
+Un mod de a modulariza codulul este prin intermediul funcțiilor.
+
+#### Funcții definiti
+```{r}
+my_sum <- function(a,b) {
+  a <- a+1
+  b <- b/2
+  a+b
+}
+my_sum(4,6)
+my_iter <- function(a,b) {
+  a <- a*2
+  a+3
+}
+my_iter(4)
+my_iter(4,5)
+my_sum(4)
+```
+Valori implicite.
+```{r}
+my_sum_2 <- function(a,b=2) {
+  a <- a+1
+  b <- b/2
+  a+b
+}
+my_sum_2(4)
+my_iter_2 <- function(a=3,b) {
+  a <- a*2
+  a+3
+}
+my_iter_2(4)
+my_iter_2(4,5)
+my_iter_2(b=4)
+formals(my_sum_2)
+```
+Argumentul ... . 
+```{r}
+my_sum_3 <- function(a,...) {
+  a <- a+1
+  b <- list(...)
+  print(b)
+  a + b[[1]]
+}
+my_sum_3(4,5,6,7,8)
+my_sum_3(4,5,6,a=7,8)
+
+my_sum_4 <- function(..., a) {
+  a <- a+1
+  b <- list(...)
+  a + b[[1]]
+}
+my_sum_4(4,5,6,a=7,8)
+my_sum_4(4,5,6,7,8)
+```
+După parametrul este recomandat să avem valori implicite.
+```{r}
+
+my_sum_4 <- function(..., a=5) {
+  a <- a+1
+  b <- list(...)
+  a + b[[1]]
+}
+my_sum_4(4,5,6,a=7,8)
+my_sum_4(4,5,6,7,8)
+```
+#### Funcții predefinite
+```{r}
+a <- 1:10
+max(a)
+sum(a)
+min(a)
+median(a)
+```
+#### Funcții iterative
+lapply(listă, funcție) – aplică funcția asupra fiecărui element al listei (returnează listă mereu)
+```{r}
+iter <- function(a) {a+1}
+a <- list(1,2,3,4,5,6)
+print(a)
+lapply(a, iter)
+a <- list(1:6)
+print(a)
+lapply(a, iter)
+```
+sapply(listă,funcție) – analog lapply, dar poate returna vector, matrice sau listă
+```{r}
+a <- list(1,2,3,4,5,6)
+print(a)
+sapply(a, iter)
+a <- list(1:6)
+print(a)
+sapply(a, iter)
+```
+apply(vector/matrice, rânduri/coloana, funcție) – c(1,3) păstrează dimensiunea 1 și 3 a unei matrice cel puțin tridimensională
+```{r}
+a <- matrix(c(1:6),nrow=2,ncol=3)
+print(a)
+apply(a,1, iter)
+apply(a,2, iter)
+```
+mapply(funcție, vector, vector) – aplică o funcție având ca argumente un element din x și un element din y
+```{r}
+a <- 1:6
+b <- 3:8
+mapply(sum,a, b)
+```
+tapply(vector, factori, funcție) – aplică funcția grupând elementele vectorului în funcție de factori
+```{r}
+a <- 1:6
+tapply(a,a<3, iter)
+```
+split(vector/data.frame/list,matrice, factori) – imparte vectorul in elemente de listă în funcție de factori (list(factori,factori))
+```{r}
+a <- 1:6
+split(a,a<3)
+split(a,list(a<3,a%%2==0))
+```
+
+
+#### Funcții anonime
+Pentru funcțiile predefinite putem folosi într-un anumite moment funcții anonime.
+
+```{r}
+a <- list(1,2,3,4,5,6)
+print(a)
+lapply(a, function(x){x*2})
+```
+#### Operatori
+Putem defini noi operatori binari utilizând formatul %nume_operator% si definind funcția pe care o execută operatorul asupra "%p%". Atenție la definire trebuie să folosim ghilimele, iar la utilizare putem folosi formatul inițial.
+```{r}
+a <- 1
+b <- 2
+"%p%" <- function(x,y) {x*2+y}
+a %p% b
+```
+### Date/Time
+Dată – numărul de zile de la 01.01.1970 Date
+Timp – numărul de secunde de la 01.01.1970 Time
+POSIXt
+POSIXct – un număr întreg mare – as.POSIXct()
+POSIXlt – o listă cu informații precalculate – as.POSIXlt()
+strptime(„January 10, 2012 10:40”, „%B %d, %Y %H:%M”)
+difftime(d1, d2, units=„days”)
+```{r}
+a <- strptime("January 10, 2012 10:40", "%B %d, %Y %H:%M")
+b <- strptime("January 12, 2012 10:40", "%B %d, %Y %H:%M")
+print(a)
+summary(a)
+class(a)
+difftime(a, b, units="days")
+```
+### Simulare/Experiment
+
+rnorm(n, mean=0,std=1) – generare de n numere random
+set.seed(x) – setare seed la inceput ca experimentul sa poată fi reprodus
+sample(x, 10, replace=FALSE) – preia 10 valori random din x
+traceback() – apelurile de funcții până la eraore
+debug(funcție) – intră în modul debug când este apelată funcția
+
+
