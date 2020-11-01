@@ -1,6 +1,10 @@
 ---
 title: "Știința Datelor Laborator 1"
-output: html_notebook
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  html_notebook: default
 ---
 # ȘD - Scop
 Scopul laborataorelor de Știința Datelor este formarea următoarelor capacități:
@@ -18,6 +22,10 @@ Laborataorelor vor fi împărțite astfel:
 - Lab 3 Colectarea, filtrarea, ordonarea și descrierea datelor - abilități de procesare a datelor
 - Lab 4 Explorarea, inferența și corelarea datelor - abilități de cercetare
 - Lab 5 Predicția, cauzalitatea și mecanicism datelor - abilități de cercetare
+
+# ȘD - Scop Laboratorul 1
+Scopul laboratarului 1 de Știința Datelor este familiarizare cu limbajul R.
+
 
 ## Limbajul R
 expression(c^2 == a[1]^2 + b[1]^2)
@@ -200,7 +208,20 @@ a <- matrix(c(1:4),nrow=2,ncol=2)
 b <- matrix(c(7:10),nrow=2,ncol=2)
 a%*%b
 ```
-### Subnetare
+#### Operatori logici
+R conține următorii operatori logici: ȘI ($ și &&), SAU (| și ||), negație (!), Sau exclusiv(xor). && și  || consideră doar primul element dintr-un vector. operația de și logic are precedență față de cea de sau. opreția de negație are precedență peste ambele.
+```{r}
+a <- c(T,F,T,F)
+b <- c(F,F,T,T)
+a & b
+a && b
+a | b
+a || b
+!a
+xor(a,b)
+```
+
+### Selecție
 
 Un lucru important în știința datelor este selectarea unor fragmente din date. Pentru
 asta avem diferiți opratori pentru a subneta.
@@ -240,6 +261,7 @@ print(a)
 print(sort(a))
 print(order(a))
 print(a[order(a)])
+print(a[a<3 & a>1])
 ```
 #### NA/NAN/Inf
 În R există anumite valori speciale pe care nu dorim să le considerăm în opreațiile noastre asupra datelor.
@@ -334,7 +356,7 @@ my_iter <- function(a,b) {
 }
 my_iter(4)
 my_iter(4,5)
-my_sum(4)
+#my_sum(4) -> argument "b" is missing, with no default
 ```
 Valori implicite.
 ```{r}
@@ -370,7 +392,7 @@ my_sum_4 <- function(..., a) {
   a + b[[1]]
 }
 my_sum_4(4,5,6,a=7,8)
-my_sum_4(4,5,6,7,8)
+#my_sum_4(4,5,6,7,8) ->  argument "a" is missing, with no default
 ```
 După parametrul este recomandat să avem valori implicite.
 ```{r}
@@ -402,7 +424,7 @@ a <- list(1:6)
 print(a)
 lapply(a, iter)
 ```
-sapply(listă,funcție) – analog lapply, dar poate returna vector, matrice sau listă
+sapply(listă,funcție) – analog lapply, dar poate returna vector, matrice sau listă. returnează vector sau matrice dacă răspunsusriile 
 ```{r}
 a <- list(1,2,3,4,5,6)
 print(a)
