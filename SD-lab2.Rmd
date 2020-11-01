@@ -3,40 +3,162 @@ title: "Știința Datelor Laborator 2"
 output: html_notebook
 ---
 
-# Mulțimi
+# ȘD - Scop Laboratorul 2
+Scopul laboratarului 2 de Știința Datelor este:
+- dezvoltarea capacității de colectare a datelor
+- dezvoltarea abilitățlori matematice necesare pentru laboratoarele de ȘD
+
+
+
+# Colectare
+Un process important în știința datelor este acela de colectare a datelor.
+Vom folosi datele prezentate în https://ec.europa.eu/eurostat/databrowser/view/educ_uoe_enrt01/default/table?lang=en
+https://ec.europa.eu/eurostat/ramon/nomenclatures/index.cfm?TargetUrl=LST_NOM_DTL_LINEAR&StrNom=CL_ISCED11&StrLanguageCode=EN&IntCurrentPage=2
+
+
+## Descarcare fisiere
+R are o parte de scripting. Putem folosi funcții precum ls, rm, mv. Înainte
+de a descărca fișiere trebuie să creăm un director unde vom pune aceste
+fișiere.
+```{r}
+if(!file.exists("data")) {dir.create("data")}
+```
+După ce am creat acest director avem nevoie de path-ul fișierul și respectiv
+url-ul către fișeierul pe care dorim să îl descărcăm.
+```{r}
+file_path <- file.path("data","fisier.txt")
+file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
+```
+Acum putem descărca fișierul: 
+```{r}
+download.file(file_url, destfile=file_path, method="curl")
+```
+
+## Fisiere locale
+O dată ce avem fișieul local putem să îl citim. Vom trece mai departe prin mai multe formate
+de fișiere.
+### TXT format
+Pentru fișiere txt putem folosi funcția read.table. Separatorul în fișierul descărcat precedent
+este "," și fișierul are antet.
+```{r}
+file_path <- file.path("data","fisier.txt")
+file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
+download.file(file_url, destfile=file_path, method="curl")
+data <- read.table(file_path)
+head(data)
+```
+### CSV format
+Pentru fișiere csv.
+```{r}
+file_path <- file.path("data","fisier.csv")
+file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
+download.file(file_url, destfile=file_path, method="curl")
+data <- read.csv(file_path)
+head(data)
+```
+### XLSX format
+pentru fișiere xlsx
+```{r}
+library("xlsx")
+file_path <- file.path("data","fisier.xlsx")
+file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
+download.file(file_url, destfile=file_path, method="curl")
+data <- read.xlsx(file_path)
+head(data)
+```
+### XML format
+```{r}
+library("XML")
+file_path <- file.path("data","fisier.json")
+file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
+download.file(file_url, destfile=file_path, method="curl")
+data <- xmlTreeParse(file_path, useInternal=TRUE)
+root_node <- xmlRoot(data)
+head(xmlSApply(root_node, xmlValue))
+head(xpathSapply(root_node, "//country", xmlValue))
+```
+
+### JSON format
+pentru fișiere json.
+```{r}
+library("jsonlite")
+file_path <- file.path("data","fisier.json")
+file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
+download.file(file_url, destfile=file_path, method="curl")
+data <- fromJSON(file_path)
+head(data)
+```
+## Baze de date
+O altă sursă pentru informații o reprezintă bazele de date.  Voi prelua una dintre cele mai folosite în știința datelor MySQL, dar sunt variante și pentru MongoDB, Cassandra, Oracle etc. o conecxiune se face cu dbConnect oferinf parola si calea la care să se lege.  Pot fi trimise în două feluri cereriile către baza de date prin getqueery care returnează răspunsul. Sau prin send querry care trimite doar cerrea către baza de date iar răspunsul poae fi luat mai târziu pe părți. Efificient din punct de vedere al memoriei. La final se eliberea întrebarea din memoria bazei de date. Și Ne deconectăm de la baza de date.
+
+### RMySql
+```{r}
+library("RMySQL")
+uDBC <- dbConnect(MySQL(), user="genome", host="genome-mysql.cse.ucsc.edu")
+response <- dbGetQuerry(uDBC, "show databases;")
+print(response)
+question <-dbSendQuerry (uDBC, "show databases;")
+answer <- fetch(question, n = 10)
+dbClearResult(question)
+print(answer)
+dbDisconnect(uDBC)
+```
+## Pagini Web
+Următoarea sursă sunt paginiile web pe care putem să le descărcăm complet în scripturi. Sunt 3 variante, prin a face o conexiune url la pagina și a citi toate liniile într-o variabilă., de a folosi XML pentru a citi pagina formatată html sau de a folosi biblioteca httr care permite autentificare în plus și respectiv păstrarea de cookies.
+
+### url
+```{r}
+con=url("https://ocw.cs.pub.ro/courses/pr/labs/04")
+codhtml <- readLines(con)
+codhtml[1:10]
+close(con)
+```
+### xml
+```{r}
+library("XML")
+url <- "https://ocw.cs.pub.ro/courses/pr/labs/04"
+codhtml <- htmlTreeParse(url, useInternals=TRUE)
+root_node <- xmlRoot(data)
+head(xmlSApply(root_node, xmlValue))
+```
+### httr
+```{r}
+library("httr")
+
+con=url("https://ocw.cs.pub.ro/courses/pr/labs/04")
+codhtml <- readLines(con)
+codhtml[1:10]
+close(con)
+```
+## Interfață de programare a aplicațiilor
+
+### Facebook
+
+### Twitter
+
+### Google 
+
+### Github
+
+## Alte Surse
+
+### Arhive
+
+### Alte Limbaje
+
+### Imagini
+
+### Hărți
+
+### Muzică
+
+
+
+# Test Pozitiv/Negativ
 
 ## Definiții matematice
 
-## Diagrame Venn
-
-## Operații
-
-### Intersecție
-
-### Reuniune
-
-### Diferența
-
-### Mulțimea Vidă
-
-## Test Pozitiv/Negativ
-
-### Definiții matematice
-
-### Matrice de confuzie (table() used maybe)
-
-
-
-# Intervale
-
-## Valoare absolută
-
-## Inegalități
-
-## Tipuri de interval
-
-## Centrarea mediei
-
+## Matrice de confuzie (table() used maybe)
 
 
 # Termeni Statistici
@@ -52,35 +174,14 @@ output: html_notebook
 ## Cuantile, Mediană
 
 
-# Funcții
+# Rată de creștere
 
-## Coordonate Carteziene
+## Rată de creștere discretă
 
-### Axele carteziene
+## Rată de creștere continuă
 
-### Cadrane
+## Utilitate : Exemplu dobândă bancă
 
-### Ecuația unei drepte
-
-#### Intersecțiile cu axele
-
-### Graficul Funcției
-
-### Funcții strict monotone
-
-### Funcții inversabile
-
-### Derivata/Tagenta
-
-### Formă xxponențială/logaritmică
-
-#### Rată de creștere discretă
-
-#### Rată de creștere continuă
-
-##### Utilitate : Exemplu dobândă bancă
-
-## Bibloteci grafice --- posibil de transferat din lab 3
 
 # Probabilități
 
@@ -110,4 +211,4 @@ output: html_notebook
 
 ## Utilitate: Test Covid
 
-## Utilitate: Multiple IDS
+## Utilitate: Multiple Intruction detection systems
