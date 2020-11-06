@@ -1,12 +1,38 @@
 ---
 title: "Știința Datelor Laborator 2"
-output: html_notebook
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  html_notebook: default
 ---
+
+```{r include=FALSE}
+library("knitr")
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+library("formatR")
+```
+
+```{r wrap-hook, include=FALSE}
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+```
+
 
 # ȘD - Scop Laboratorul 2
 Scopul laboratarului 2 de Știința Datelor este:
-- dezvoltarea capacității de colectare a datelor
-- dezvoltarea abilitățlori matematice necesare pentru laboratoarele de ȘD
+
+  -  dezvoltarea capacității de colectare a datelor
+  -  dezvoltarea abilitățlori matematice necesare pentru laboratoarele de ȘD
 
 
 
@@ -26,7 +52,7 @@ if(!file.exists("data")) {dir.create("data")}
 După ce am creat acest director avem nevoie de path-ul fișierul și respectiv
 url-ul către fișeierul pe care dorim să îl descărcăm.
 ```{r}
-file_path <- file.path("data","fisier.txt")
+file_path <- file.path("data","fisier_nou.txt")
 file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
 ```
 Acum putem descărca fișierul: 
@@ -42,8 +68,8 @@ Pentru fișiere txt putem folosi funcția read.table. Separatorul în fișierul 
 este "," și fișierul are antet.
 ```{r}
 file_path <- file.path("data","fisier.txt")
-file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
-download.file(file_url, destfile=file_path, method="curl")
+#file_url <- "https://doc-0k-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/pucvd4g3behfmvrcifmhc2s5kufkpe2c/1604310000000/17693260900035163494/*/1PWG-MqTswtWoMI6PgbRy1-EG0WfLRJ9h?e=download"
+#download.file(file_url, destfile=file_path, method="curl")
 data <- read.table(file_path)
 head(data)
 ```
@@ -51,31 +77,31 @@ head(data)
 Pentru fișiere csv.
 ```{r}
 file_path <- file.path("data","fisier.csv")
-file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
-download.file(file_url, destfile=file_path, method="curl")
+#file_url <- "https://doc-0o-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/e2kbalef6jnmotcdcmvg7b31a8gtbpac/1604303700000/17693260900035163494/*/1TuvPExKDz5Z0T-b8Tr4FcIYN-8-CuDc4?e=download"
+#download.file(file_url, destfile=file_path, method="curl")
 data <- read.csv(file_path)
 head(data)
 ```
 ### XLSX format
 pentru fișiere xlsx
 ```{r}
-library("xlsx")
+library("openxlsx")
 file_path <- file.path("data","fisier.xlsx")
-file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
-download.file(file_url, destfile=file_path, method="curl")
-data <- read.xlsx(file_path)
+#file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/rsj0he5ng596kqivcheetbd0dapnb1ab/1604305200000/17693260900035163494/*/1ZV6qdGS6r03tudsarMI214X4r33dXR41?e=download"
+#download.file(file_url, destfile=file_path, method="curl")
+data <- read.xlsx(file_path, sheet = 1)
 head(data)
 ```
 ### XML format
 ```{r}
 library("XML")
-file_path <- file.path("data","fisier.json")
-file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
-download.file(file_url, destfile=file_path, method="curl")
+file_path <- file.path("data","fisier.xml")
+#file_url <- "https://doc-14-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/0jg0hr1ismb4vdocvc9g55499q0oevbi/1604305275000/17693260900035163494/*/1kNOT9GF9p1KDocBeLKfeAVgxtySKwpHU?e=download"
+#download.file(file_url, destfile=file_path, method="curl")
 data <- xmlTreeParse(file_path, useInternal=TRUE)
 root_node <- xmlRoot(data)
 head(xmlSApply(root_node, xmlValue))
-head(xpathSapply(root_node, "//country", xmlValue))
+head(xpathSApply(root_node, "//country", xmlValue))
 ```
 
 ### JSON format
@@ -83,8 +109,8 @@ pentru fișiere json.
 ```{r}
 library("jsonlite")
 file_path <- file.path("data","fisier.json")
-file_url <- "https://doc-00-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/64vhnel5u0hhqf8d1le641u870gkpjlr/1604231475000/17693260900035163494/*/13oNNRzkkwlXnm8dsxwoDVfqTLr5m9YiV?e=download"
-download.file(file_url, destfile=file_path, method="curl")
+#file_url <- "https://doc-04-28-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/7a1al13v3ed4rkq22pcss0nqetrjuv5d/1604305425000/17693260900035163494/*/1w8J70_nptcwrbOD3XG0-LvsahxsjknrH?e=download"
+#download.file(file_url, destfile=file_path, method="curl")
 data <- fromJSON(file_path)
 head(data)
 ```
@@ -95,9 +121,9 @@ O altă sursă pentru informații o reprezintă bazele de date.  Voi prelua una 
 ```{r}
 library("RMySQL")
 uDBC <- dbConnect(MySQL(), user="genome", host="genome-mysql.cse.ucsc.edu")
-response <- dbGetQuerry(uDBC, "show databases;")
-print(response)
-question <-dbSendQuerry (uDBC, "show databases;")
+response <- dbGetQuery(uDBC, "show databases;")
+head(response, n=5)
+question <-dbSendQuery (uDBC, "show databases;")
 answer <- fetch(question, n = 10)
 dbClearResult(question)
 print(answer)
@@ -117,98 +143,533 @@ close(con)
 ```{r}
 library("XML")
 url <- "https://ocw.cs.pub.ro/courses/pr/labs/04"
-codhtml <- htmlTreeParse(url, useInternals=TRUE)
-root_node <- xmlRoot(data)
+codhtml <- htmlTreeParse(url, useInternalNodes = TRUE)
+root_node <- xmlRoot(codhtml)
 head(xmlSApply(root_node, xmlValue))
 ```
 ### httr
 ```{r}
 library("httr")
-
-con=url("https://ocw.cs.pub.ro/courses/pr/labs/04")
-codhtml <- readLines(con)
-codhtml[1:10]
-close(con)
+#html <- GET(url, authenticate("", ""))
+url <- "https://ocw.cs.pub.ro/courses/pr/labs/04"
+html <- GET(url)
+html_content <- content(html, as="text")
+codhtml <- htmlParse(html_content, asText = TRUE)
+root_node <- xmlRoot(codhtml)
+head(xmlSApply(root_node, xmlValue), n=1)
+#pagina <- handle(url) #pentru păstrare cookies
+#GET(handle=pagina, path="/")
 ```
 ## Interfață de programare a aplicațiilor
 
 ### Facebook
 
-### Twitter
-
-### Google 
-
-### Github
-
-## Alte Surse
-
-### Arhive
-
-### Alte Limbaje
-
-### Imagini
-
-### Hărți
-
-### Muzică
 
 
 
-# Test Pozitiv/Negativ
+# Test de clasificare binară
+Se consider un test de clasificare binară un test care depistează un atribut ce împarte o pupulație în două. Cele mai populare test sunt cele din medicină care spun dacă ești pozitiv pentru un anumit virus.
 
 ## Definiții matematice
+Fie $X=\{ \textrm{toți oameni care au făcut un test covrig} \}$ .
+Fie $B=\{x 	\in X \mid x \quad \textrm{are Covrig} \}$ și $S=\{x	\in X \mid x \quad \textrm{nu are Covrig} \}$   .
+Fie $T$ un test atunci $P=\{x	\in X \mid x \quad \textrm{a ieșit pozitiv la testul} \quad T\}$ 
+și $N=\{x 	\in  X \mid x  \quad \textrm{a ieșit negativ la testul} \quad T\}$ .
+Avem următoarele proprietăți: $X=B \cup S,B \cap S= \emptyset,  X=P \cup N,P \cap N= \emptyset$ .
+În general $\mid B \mid=\mid S \mid$ .
 
-## Matrice de confuzie (table() used maybe)
+\begin{center}
+\begin{tabular}{ |p{0.3\linewidth}|p{0.3\linewidth}|p{0.3\linewidth}| }
+ \hline
+ Denumire & Formulă & Descriere \\ 
+ \hline
+ \hline
+ AP & $B \cap P$ & adevărat pozitivi \\ 
+ \hline
+ AN & $S \cap N$ & adevărat negativi \\ 
+ \hline
+ FN & $B \cap N$ & falși negativi \\ 
+ \hline
+ FP & $S \cap P$ & falși pozitivi \\ 
+ \hline
+ pB & $\mid B \mid / \mid X \mid$ & proporția din populație care au boala \\ 
+ \hline
+ pS & $\mid S \mid / \mid X \mid$ & proporția din populație care sunt sănătoși \\ 
+ \hline
+ p(AP) & $\mid B \cap P \mid / \mid B \mid$ & rata de adevărat pozitivi \\ 
+ \hline
+ p(FP) & $\mid S \cap P \mid / \mid S \mid$ & rata de falși pozitivi \\ 
+ \hline
+ p(AN) & $\mid S \cap N \mid / \mid S \mid$ & rata de adevărat negativi \\ 
+ \hline
+ p(FN) & $\mid B \cap N \mid / \mid B \mid$ & rata de falși negativi \\ 
+ \hline
+ \hline
+\end{tabular}
+\end{center}
+
+
+
+## Matrice de confuzie
+Matricea de confuzie este o matrice 2x2 unde coloane reprezintă partea din populație care este bolnavă sau sănătoasă iar rânduri rezultatul la test. fiecare celulă conține numărul de oameni care fac parte dintr-o anumită parte a populație cu un anumit rezultat la test.
+
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ Test & Bolnavi & Sănătoși \\ 
+ \hline
+ \hline
+ Pozitiv & 96 & 2 \\ 
+ \hline
+ Negativ & 4 & 98 \\ 
+ \hline
+ \hline
+\end{tabular}
+\end{center}
+
+În R pentru a calcula matricea de confuzie se folosește funcția table. Un exemplu putem da pe setul de date mtcars care conține date despre mai mașini. Propun un test teoretic în care în funcție de cai putere spunem dacă mașina poate faci mai mult de 20 de mile cu un galon de combustibil. Îns etul de date există și adevarată valoare, dar vom verifica dacă tesul nostru este bun.
+
+```{r}
+data <- table(mtcars$hp<110, mtcars$mpg>20)
+dimnames(data) <- list(c("<110",">=110"), c(">20","<=20"))
+print(data)
+pozitive_rate = data[1,1]/sum(data[,1])
+print(pozitive_rate)
+```
+
 
 
 # Termeni Statistici
 
+
 ## Media
+Media: se calculeaza suma tuturor valorilor si se imparte la numarul total de 
+intrari de setul de date
+```{r}
+x <- c(1,2,3,4,5,1,2,3,1,2,4,5,2,3,1,1,2,3,5,6) # our data set
+mean.result = mean(x) # calculate mean
+print (mean.result)
+```
+## Mediana
+Mediana se obtine ordonand crescator numerele din setul de date si extragand 
+valoarea de la pozitia din mijloc. In cazul sirurile cu numar par de elemente,
+se face media aritmetica a elementelor din pozitiile de mijloc.
+```{r}
+x <- c(1,2,3,4,5,1,2,3,1,2,4,5,2,3,1,1,2,3,5,6) # our data set
+median.result = median(x) # calculate median
+print (median.result)
+```
 
 ## Variația
+Variatia ne spune cat de departate sunt numerele din serie de medie.
+```{r}
+x <- c(1,2,3,4,5,1,2,3,1,2,4,5,2,3,1,1,2,3,5,6) # our data set
+variance.result = var(x) # calculate variance
+print (variance.result)
+```
 
 ## Deviația Standard
+Deviatia standard este radicalul variatiei si e o masura prin care se
+cuantifica dispersia setului de date.
+A aparut din cauza dezavantajelor masurarii variatiei:
+- Se exprimă cu unităţile de măsurăale variabilei, ridicate la pătrat
+- Are în general valori foarte mari comparativ cu media.
+```{r}
+x <- c(1,2,3,4,5,1,2,3,1,2,4,5,2,3,1,1,2,3,5,6) # our data set
+sd.result = sqrt(var(x)) # calculate standard deviation
+print (sd.result)
+```
 
 ## Modulul
+Clasa sau valoarea corespunzătoare frecvenţei maxime dintr-o serie statistică se  numeşte mod.
+```{r}
+mode <- function(x) {
+     ux <- unique(x)
+     ux[which.max(tabulate(match(x, ux)))]
+}
+ 
+x <- c(1,2,3,4,5,1,2,3,1,2,4,5,2,3,1,1,2,3,5,6) # our data set
+ 
+mode.result = mode(x) # calculate mode (with our custom function named ‘mode’)
+print (mode.result)
+```
 
-## Cuantile, Mediană
-
+## Cuantile
+În statistică și probabilitate, cuantilele sunt puncte tăiate împărțind intervalul unei distribuții de probabilitate în intervale continue cu probabilități egale sau împărțind observațiile într-un eșantion în același mod.
+Exemplu:
+- Decile. Pe eşantioane mai mari de multe sute de indivizi. Sunt 9 decile,  fiecare corespunzând unui procent de 10%, 20%, ..., 90% din eşantion. Decila a 5-a este mediana. 
+- Centilele. Folosite, în studii pe mii de cazuri, de obicei de un interes mai  larg, naţional, internaţional şi sunt corespunzătoare procentelor de 1%, 2%, ..., 99% din lot. Centila a 50-a este mediana.
+```{r}
+quantile(x <- rnorm(1001)) # Extremes & Quartiles by default
+quantile(x,  probs = c(0.1, 0.5, 1, 2, 5, 10, 50, NA)/100)
+```
 
 # Rată de creștere
 
-## Rată de creștere discretă
+Există doup tipuri de cresteri:
+- creștere discretă, atunci când schimbările apar la intervale specifice
+- creștere continua: atunci când schimbările sunt permanente
 
-## Rată de creștere continuă
+Rată de creștere discretă : $a*(1+r)^t$
+
+Rată de creștere continuă : $a*e^{(r*t)}$
 
 ## Utilitate : Exemplu dobândă bancă
+
+Dobândă discretă este simplă. Este pe intervale fixe de timp în general ani.
+Câți bani voi avea dacă depun 1000 de lei la o dobândă de 5% pe an după 2 ani.
+```{r}
+initial = 1000
+rate = 0.05
+time = 2
+initial * ((1+rate)^time)
+```
+Dobânda continuă a apărut datorită lui Euler care și întrebat prietenul bancher: Dar nu ai vrea tu să îmi dai jumăte din dobândă pe jumăte din perioadă de mai multe ori până perioada a ajuns la o secundă. Considerând dobânda inițială de r% pe an și n numărul decâte ori a fost înjumătățită dobând și timpul rezultă suma finală ar fi $a*(1+\frac{r}{2^{n}})^{2^n*t}=a*(1+\frac{1}{2^{n}/r})^{\frac{2^n}{r}*(r*t)}$ . Înlocuim $m=\frac{2^n}{r}$ și rezultă că suma finală o să aibă forma $a*(1+\frac{1}{m})^{m*(r*t)}$ trecând în limită de m la infinit rezultă că suma finală are forma $a*e^{(r*t)}$. Deci pentru o dobândă continuă de 5% pe termen de 2 ani cu suma initială de 1000 de lei vom avea o sumă finală mai mare decât la dobânda discretă, deci Euler și-a păcălit prietenul.
+```{r}
+initial = 1000
+rate = 0.05
+time = 2
+initial * exp(rate*time)
+```
+
+## Exemplu: Cresterea populatiei
+In functie de tipul de populatie, cresterea poate fi continua, precum in cazul unei colonii de bacterii, unde putem prezice cresterea populatiei dupa o anumita perioada de timp, dar poate fi si discreta, cum e in cazul tigrilor, care au o
+perioada de imperechere
+
+
+## Exemplu: Bursa 
+Valoarea indecsilor de la bursa se schimba in fiecare zi, pare o modificare continua, dar nu exista o rata predictibila. Vedem o multime de salturi si pentru a putea obtine informatii concludente, se fac studii anuale. De obicei, 
+bursa se descrie printr-o crestere discreta anuala.
+
+
 
 
 # Probabilități
 
+Pentru a explica mai bine termenii de statistici ne vom folosi de 2 albume de muzică VOL. 3 - L'ESPERANCE HITS 2008 [https://www.lautarul.shop/en/manele/1827-vol-lesperance-hits.html] vol 3 și FORTZA MANELE [https://www.lautarul.shop/en/manele/780-fortza-manele.html].
+
+
+\begin{center}
+\begin{tabular}{ |p{0.3\linewidth}|p{0.3\linewidth}|p{0.3\linewidth}| } 
+ \hline
+ Nr. melodie & L'ESPERANCE HITS 2008  & FORTZA MANELE \\ 
+ \hline
+ \hline
+ 1 & Jean de la Craiova - Tu esti femeia care-mi place & Alberto voce de diamant - Nu mai pot \\ 
+ \hline
+ 2 & George de la Stefanesti  Dorel de la Popesti - Iti dau partea mea de fericire & Florin Salam - Eu sunt bomba nucleara \\ 
+ \hline
+ 3 & Mihaita Piticul - Ce inima de gheata & Copilul de Aur - Daca ramai in viata mea \\ 
+ \hline
+ 4 & Nicolae Guta - Ce le-as face la dusmani & Danezu - Arunc miliarde \\ 
+ \hline
+ 5 & Adrian Minune - Si cand vad patul gol & Denisa - Inima mea \\ 
+ \hline
+ 6 & Stefan de la Barbulesti - Ma rog la tine & Sorina - Nu mai pot sa ma indragostesc \\ 
+ \hline
+ 7 & Neluta Neagu - De-ar putea dusmani & Liviu Pustiu - Am scoala de mafiot \\ 
+ \hline
+ 8 & Sorinel Pustiul - Danseaza cu mine macar cinci minute & Octavian Francezul - Cunosc omul dupa fata \\ 
+ \hline
+ 9 & Mihaita Piticul - Acum imi ceri sa fim amici & Vali Vijelie si R. Printisorul - Taicutul meu \\ 
+ \hline
+ 10 & Stefan de la Barbulesti - Inima mea plange & Adrian Copilul Minune si Mihaita Piticu - Nevasta mea \\ 
+ \hline
+ 11 & Neluta Neagu - Sunt un barbat luxos & Sorinel Pustiu - Ce dimineata trista \\ 
+ \hline
+ 12 & Adrian Minune - Cat te-ai schimbat & Nicolae Guta si Play A.J. - Cum te misti, asa vorbesti \\ 
+ \hline
+ \hline
+\end{tabular}
+\end{center}
+
+Introducem datele în R pentru a le putea procesa mai târziu.
+```{r}
+album_1 <- data.frame(autor=c("Jean de la Craiova", "George de la Stefanesti", "Mihaita Piticul", "Nicolae Guta", "Adrian Minune", "Stefan de la Barbulesti", "Neluta Neagu", "Sorinel Pustiul", "Mihaita Piticul", "Stefan de la Barbulesti", "Neluta Neagu", "Adrian Minune"), melodie=c("Tu esti femeia care-mi place", "Iti dau partea mea de fericire", "Ce inima de gheata", "Ce le-as face la dusmani", "Si cand vad patul gol", "Ma rog la tine", "De-ar putea dusmani", "Danseaza cu mine macar cinci minute", "Acum imi ceri sa fim amici", "Inima mea plange", "Sunt un barbat luxos", "Cat te-ai schimbat"))
+album_2 <- data.frame(autor=c("Alberto voce de diamant", "Florin Salam", "Copilul de Aur", "Danezu", "Denisa", "Sorina", "Liviu Pustiu", "Octavian Francezul", "Vali Vijelie", "Adrian Minune", "Sorinel Pustiu", "Nicolae Guta"), melodie=c("Nu mai pot", "Eu sunt bomba nucleara", "Daca ramai in viata mea", "Arunc miliarde", "Inima mea", "Nu mai pot sa ma indragostesc", "Am scoala de mafiot", "Cunosc omul dupa fata", "Taicutul meu", "Nevasta mea", "Ce dimineata trista", "cum te misti, asa vorbesti"))
+```
+
 ## Definiția unei probabilități
+
+Def. Gradul de încredere în valaorea de adevăr a unui eveniment.
+
+$\textrm{Fie} \quad x \quad \textrm{un eveniment}$
+
+Notație: $P(x)=\textrm{prbabilitatea ca x să fie adevărat}$ .
+$P(x) \in [0,1]$.
+
+Folosind albumul L'ESPERANCE HITS 2008 probabilitatea ca să ascultând o melodie de pe album să asculți o manea este 1.
+
+$\textrm{Fie} \quad !x \quad \textrm{evenimentul în care} \quad x \quad \textrm{nu este adevărat atunci:} \quad P(x)+P(!x)=1$.
+
+Folosind albumul L'ESPERANCE HITS 2008 probabilitatea ca să asculți o melodie de Adrian Minune sau sa ascultți o melodie de alt cântereșț este 1. 
+
+
+Def. $P(x)=\frac{\textrm{numărul de experimente în care x a avut loc}}{\textrm{număr total de experimente}}$
+
+Folosind albumul L'ESPERANCE HITS 2008 probabilitatea ca să asculți o melodie de Adrian Minune este numărul de melodii cântate de adrian minune pe numărul total de melodii de pe album, adică $\frac{2}{12}=\frac{1}{6}=0.1666$.
+
+```{r}
+sum(album_1$autor=="Adrian Minune")/length(album_1$autor)
+
+sum(album_1$autor=="Adrian Minune")/length(album_1$autor) + 
+sum(album_1$autor!="Adrian Minune")/length(album_1$autor)
+
+```
+
 
 ## Distribuție de probabilități/Principiul Indiferenței
 
+Def. Distribuția de probabilități este o colecție de evenimente care sunt exhaustive (cel puțin un eveniment este adevărat) și exclusive (cel mult un eveniment este adevărat).
+
+Folosind albumul L'ESPERANCE HITS 2008 noi la un moment dat sigur ascutăm o singură melodie de pe album (cel puțin un eveniment este adevărat și cel mult un eveniment este adevărat). 
+
+Principiul Indiferenței:
+
+$\textrm{Fie} \quad X=\{x_{1}, x_{2}, ... ,x_{n}\} \quad \textrm{cu} \quad n = \mid X \mid \quad \textrm{atunci dacă nu știm nimic specific despre evenimentele} \quad x_{i} \quad \textrm{putem considera că} \quad P(x_{i})=\frac{1}{n}$
+
+Folosind albumele noastre, probabilitatea ca noi să ascultăm o melodie de pe unul dintre albume este $\frac{1}{2}=0.5$ sau cum se mai spune jumătate tu jumătate eu.
+
+
 ## Operații
+
+$\textrm{Fie} \quad X,Y \quad  \textrm{două evenimente sau grupuri de evenimente}$
 
 ### Și
 
+$P(X \quad \textrm{și} \quad Y) = \textrm{probabilitatea ca evenimentele X și Y să fie adevărate în același timp}$
+
+$P(X \quad \textrm{și} \quad Y) = P(X) * P(Y) \Leftrightarrow \textrm{X și Y sunt indepedente adică} \quad X \cap Y = \emptyset$
+
+Folosind albumul L'ESPERANCE HITS 2008 hai să calculăm probabilitatea ca noi ascultând două melodii aleatoriu de pe album una după alta să fie cantate de Adrian Minune.
+
+```{r}
+(sum(album_1$autor=="Adrian Minune")/length(album_1$autor)) * (sum(album_1$autor=="Adrian Minune")/length(album_1$autor))
+```
+
+$\textrm{Notație:} \quad P(X \quad \textrm{și} \quad Y) = P(X,Y) = P(Y \quad \textrm{și} \quad X) = P(Y,X) = P(X \cap Y)= P(Y \cap X)$
+
 ### Sau
+
+$P(X \quad \textrm{sau} \quad Y) = \textrm{probabilitatea ca evenimentul X sau evenimentul Y să fie adevărat}$.
+
+$P(X \quad \textrm{sau} \quad Y) = P(X, !Y) + P(!X,Y) + P(X,Y) = P(X)*P(!Y)+P(!X) *P(Y)+P(X,Y) = P(X)*(1-P(Y))+(1-P(X))*P(Y)+P(X)*P(Y)=P(X)-P(X)*P(Y)+P(Y)-P(X)*P(Y)+P(X)*P(Y)$.
+
+$P(X \quad \textrm{sau} \quad Y) = P(X) + P(Y) - P(X \cap Y)$.
+
+Folosind albumul L'ESPERANCE HITS 2008 hai să calculăm probabilitatea ca noi ascultând o melodie aleatoriu de pe album fie cantată de Adrian Minune sau de Nicolae Guță. De reținut că nu exitstă nici o melodie pe album să fie cântat și de Adrian Minune și de Nicolae Guță.
+
+```{r}
+(sum(album_1$autor=="Adrian Minune")/length(album_1$autor)) + (sum(album_1$autor=="Nicolae Guta")/length(album_1$autor))
+```
 
 ### Dependența
 
+$P(X \mid Y) = \textrm{probabilitatea ca X să fie adevărat dacă știm că Y este adevărat}$
+
+$P(X \mid Y) = \frac{\textrm{experimentele în care X și Y sunt adevărate}}{\textrm{experimentele în care Y este adevărat}}=\frac{P(X,Y)}{P(Y)}$
+
+Folosind cele două albume, putem calcula probabilități depedente precum: probabilitatea ca ascultând o melodie de pe albumul L'ESPERANCE HITS 2008 să fie cântat de Adrian Minune sau probabilitatea ca ascultând o melodie de pe albulmul FORTZA MANELE să fie cântată de Adrian Minune.
+
+```{r}
+(sum(album_1$autor=="Adrian Minune")/length(album_1$autor))
+(sum(album_2$autor=="Adrian Minune")/length(album_2$autor))
+```
+
 #### Regula Produsului
+
+$P(X,Y)=P(X \mid Y) * P(Y)$
+
+Folosind cele două albume, putem calcula probabilitatea să ascultăm o melodie cântată de Adrian Minune și să fie o melodie de pe albumul L'ESPERANCE HITS 2008 în același timp.
+
+```{r}
+(sum(album_1$autor=="Adrian Minune")/length(album_1$autor)) * 0.5
+```
 
 #### Regula Sumei
 
+$\textrm{Fie Y o distribuție de probabilități și X un eveniment atunci} \quad P(X)=\sum_{Y_{i} \in Y}^{} P(X \mid Y_{i}) * P(Y_{i})$
+
+Folosind cele două albume, putem calcula probabilitatea să ascultăm o melodie cântată de Adrian Minune.
+
+```{r}
+prob_adrian <- (sum(album_1$autor=="Adrian Minune")/length(album_1$autor)) * 0.5 + (sum(album_2$autor=="Adrian Minune")/length(album_2$autor)) * 0.5
+print(prob_adrian)
+```
+
+
 #### Teorema 1
+
+$P(X \mid Y) = \frac{P(X,Y)}{P(Y)}= \frac{P(Y,X)}{P(Y)} = \frac{P(Y|X)*P(X)}{P(Y)}$
+
+Folosind cele două albume, putem calcula probabilitatea să ascutăm melodia după albumul L'ESPERANCE HITS 2008 știind că ascutăm o melodie de Adrian Minune. X = L'ESPERANCE HITS 2008 și Y = Adrian Minune.
+
+```{r}
+((sum(album_1$autor=="Adrian Minune")/length(album_1$autor)) * 0.5) / prob_adrian
+```
 
 #### Corolar Teorema 1 + Regula Sumei
 
+$P(Y_{i} \mid X) = \frac{P(X|Y_{i})*P(Y_{i})}{P(X)}=\frac{P(X|Y_{i})*P(Y_{i})}{\sum_{Y_{j} \in Y}^{} P(X \mid Y_{j}) * P(Y_{j})}$
+
+Folosind cele două albume, noi ascultăm aleatoriu melodii de pe unul dintre cele două albume. Știind că am ascultat 2 melodii consecutive cântate de Adrian minune care este probabilitatea să ascultăm melodii de pe albumul L'ESPERANCE HITS 2008.
+
+```{r}
+prob_adrian_esperance <- sum(album_1$autor=="Adrian Minune")/length(album_1$autor)
+prob_2_adrian_esperance <- prob_adrian_esperance * prob_adrian_esperance
+prob_adrian_fortza <- sum(album_2$autor=="Adrian Minune")/length(album_2$autor)
+prob_2_adrian_fortza <- prob_adrian_fortza * prob_adrian_fortza
+prob_esperance_2_adrian <- (prob_2_adrian_esperance * 0.5)/(prob_2_adrian_esperance * 0.5 + prob_2_adrian_fortza * 0.5)
+print(prob_esperance_2_adrian)
+```
+
 #### Teorema 2
+
+
+$\textrm{Fie} \quad X^{'} = X + x \quad \textrm{astfel încât} \quad P(X^{'} \mid !X)=0 \quad \textrm{(Dacă X nu are loc atunci } X^{'} \textrm{ nu poate avea loc) și } P(Y_{i} \mid X^{'}) = \frac{P(X^{'} \mid Y_{i}) * P(Y_{i})}{P(X^{'})} \quad \textrm{atunci } P(Y_{i} \mid X^{'})=\frac{P(x \mid Y_{i}) * P(Y_{i} \mid X)}{\sum_{Y_{j} \in Y}^{} P(x \mid Y_{j}) * P(Y_{j} \mid X)}$
+
+Pare greu dar folosind cele două albume sperăm să putem explica. Considerăm $X$ ca fiind ascultarea a doua 2 melodii consecutive cântate de Adrian Minune. Considerăm că $X^{'}$ este acultarea a trei melodii consecutive cântate de Adrian Minune. Se observă că nu putem asculta trei melodii consecutive cântate de Adrian Minune dacă nu am ascultat 2 deja consecutiv, deci se verifică $P(X^{'} \mid !X)=0$. Să spunem că avem de calculat probabilitatea că ascultăm melodii aleatorii cu repetiție de pe albumul L'ESPERANCE HITS 2008 știind că au fost 3 melodii consecutive cântate de Adrian Minune. Noi știm deja rezultate pentru 2 melodii cosnecutive, să îl numim un experiment precedent. Probabilitatea ascultăm melodii de pe albumul L'ESPERANCE HITS 2008 este probabilitatea de a asculta o melodie cântată de Adrian Minune de pe albumul L'ESPERANCE HITS 2008 înmuțit cu probabilitatea de că albumul de pe care am ascultat primele două melodii consecutive cu adrian minune să fie L'ESPERANCE HITS 2008. Totul supra sumei dintre probabilitatea prezentată precedent și cea ca acest evenimentul de mai sus să se întâmple pe celălalt album.
+
+```{r}
+prob_fortza_2_adrian <- 1 -prob_esperance_2_adrian
+prob_esperance_3_adrian <- (prob_adrian_esperance * prob_esperance_2_adrian)/(prob_adrian_esperance * prob_esperance_2_adrian + prob_adrian_fortza * prob_fortza_2_adrian)
+print(prob_esperance_3_adrian)
+```
 
 #### Teorema 3
 
+Probabilitatea ca s evenimente să se înâmple din n încercări.
+
+$\textrm{Fie } X \textrm{ un eveniment și } P(X) \textrm{ probabilitatea ca X să se înâmple. Făcând un experiment de n ori putem calcula probabilitatea ca evenimentul X să se fi întâmplat de exact s ori cu următoarea formulă } P(X^{s}) = {n\choose s} P(X)^{s} * (1- P(X))^{n-s}$
+
+Folsind albumul L'ESPERANCE HITS 2008, ascultând 50 de melodii aleatoriu după album care este probabilitatea ca fix 14 să fie cântate de Adrian Minune.
+
+```{r}
+binom_probability <- function(p,s,n) {
+  choose(n, s) * p^s * (1-prob_adrian_esperance)^(n-s)
+}
+binom_probability(prob_adrian_esperance, 14, 50)
+```
+
+
 ## Utilitate: Test Covid
 
+Unele din cel mai bune teste de covid are următoarele valori: p(AP)=98%, p(FN)=2%, p(FP)=4%, p(TN)=96%,  Populație_România=16 (mil) Bolnavi_România=276802 (05.11.2020). Vom calcula probabiliatea de a fi bolnav dacă ai făcut 3 teste de covid dintre care unul singur a fost pozitiv (adevărat ar fi în acest caz, confuzie de nume). Putem crea matricea de confuzie și vom calcula valorii de mai sus cum am fi avut doar matricea de confuzie.
+
+```{r}
+data <- table(1:2, 1:2)
+dimnames(data) <- list(c("T","F"), c("P","N"))
+data[1,1] <- 98
+data[2,1] <- 2
+data[1,2] <- 4
+data[2,2] <- 96
+print(data)
+t_pozitive_rate <- data[1,1]/sum(data[,1])
+f_pozitive_rate <- data[1,2]/sum(data[,2])
+f_negative_rate <- data[2,1]/sum(data[,1])
+t_negative_rate <- data[2,2]/sum(data[,2])
+```
+
+Calculăm probabilități să avem un test "true" și două "false" dacă suntem pozitive (bolnavi), respectiv negativi (sănătoși).
+
+```{r}
+probability_tff_p <- t_pozitive_rate * f_negative_rate * f_negative_rate
+probability_tff_n <- f_pozitive_rate * t_negative_rate * t_negative_rate
+```
+
+Suntem două variante de a calcula probabilitatea la a fi bolanv având rezultatele testelor. Prima este când luăm un om aleatoriu din populația româniei și face testul, al doilea când persoana este suspectă fiind în contact intră în categoria oameniilor căror li se face teste. Prima dată calculăm probabilitatea să fii bolnav dacă ești cetățean român. A doua este luat numărul de bolnavi (chiar dacă sunt cei ce au ieșit "true" (pozitvi la test)) relativ la nunmărul de teste făcute la ziua respectivă. Calculăm probabilitatea să fi bolnav dacă ai rezultatele respective la teste ca probabilitatea de avea rezultatele respective daca ești bolnav înmulțit cu probabilitatea să fi bolnav supra probabilitatea de avea rezultatele respective daca ești bolnav înmulțit cu probabilitatea să fi bolnav plus probabilitatea de avea rezultatele respective daca ești sanatos înmulțit cu probabilitatea să fi sanatos.
+
+```{r}
+romania_population <-  16000000
+romania_positive <- 276802
+romania_proability_p <- romania_positive / romania_population
+probability_p_tff_ro <- (probability_tff_p * romania_proability_p) / (probability_tff_p * romania_proability_p + probability_tff_n * (1-romania_proability_p))
+test_number <- 30000
+test_p <- 9000
+test_probability_p <- 9000 / 30000
+probability_p_tff_test <- (probability_tff_p * test_probability_p) / (probability_tff_p * test_probability_p + probability_tff_n * (1-test_probability_p))
+print(probability_p_tff_ro)
+print(probability_p_tff_test)
+```
+
 ## Utilitate: Multiple Intruction detection systems
+
+O utilitate în Rețelistică este acea de folosire de mai multe IDS-uri la intrarea în rețea de la difereți vendori. Întrebare cu cât este mai bună prevenția dacă folosim mai multe IDS-uri decât unul singur. Trebuie să calculăm probabilitatea ca un virus să treacă de  două IDS-uri.
+Fie două IDS-uri cu următoarele propirietăți: 
+IDS1 : p(AP)=97%, p(FN)=3%, p(FP)=4%, p(TN)=96%
+IDS1 : p(AP)=96%, p(FN)=4%, p(FP)=2%, p(TN)=98%
+Considerăm grosolan că 1% din pachetele trimise către echipamente sunt malițioase.
+
+```{r}
+t_pozitive_rate_1 <- 0.97
+f_negative_rate_1 <- 0.03
+f_pozitive_rate_1 <- 0.04
+t_negative_rate_1 <- 0.96
+t_pozitive_rate_2 <- 0.96
+f_negative_rate_2 <- 0.04
+f_pozitive_rate_2 <- 0.02
+t_negative_rate_2 <- 0.98
+malicious_porbability <- 0.01
+```
+
+Trebuie să calculăm probabilitatea ca un pachet mailițios să treacă de ambele ids-uri, adică să primească "false" de la ambele (false negative) și probabilitatea ca un pachet mailițios să treacă de primul IDS.
+
+```{r}
+test_ff_malitios <- f_negative_rate_1 * f_negative_rate_2
+test_ff_ok <- t_negative_rate_1 * t_negative_rate_2
+malitios_ff <- (test_ff_malitios * malicious_porbability) /(test_ff_malitios * malicious_porbability + test_ff_ok * (1 - malicious_porbability))
+print(malitios_ff)
+malitios_f <- (f_negative_rate_1 * malicious_porbability) / (f_negative_rate_1 * malicious_porbability + t_negative_rate_1 * (1 - malicious_porbability))
+print(malitios_f)
+```
+
+Deci este de 100 de ori mai puțin probabil să treacă de ambele decât de unul singur.
+
+
+# Eurostat
+
+Eurostat este o bază de date europene cu statistici despre tăriile din Europa (nu doar UE). Un beneficiu al limajului R este că această bază de date paote fi accesată direct din limbajul R cu ajutorul mai multor bibloteci. Puteți găsi datele pe care puteți accesa pe [https://ec.europa.eu/eurostat/data/database].
+
+```{r}
+# install.packages(c("rgdal", "RColorBrewer", "sp", "GISTools", "classInt", "maptools"))
+# install.packages("SmarterPoland")
+library("rgdal")
+library("RColorBrewer")
+library("sp")
+library("GISTools")
+library("classInt")
+library("maptools")
+library("SmarterPoland")
+#temp <- tempfile(fileext = ".zip")
+#download.file("http://epp.eurostat.ec.europa.eu/cache/GISCO/geodatafiles/NUTS_2010_60M_SH.zip", temp)
+#unzip(temp)
+EU_NUTS <- readOGR(dsn = "./NUTS_2010_60M_SH/data", layer = "NUTS_RG_60M_2010")
+EU_NUTS <- spTransform(EU_NUTS, CRS("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"))
+plot(EU_NUTS)
+```
+
+
+
+În primă fază am descărcat o hartă cu țări din euroap și regiuniile lor administrative. Acum urmează să descărcăm date textuale. Vom folosi un set de date care arată rata somajului per regiune in functie de sex,vârstă, și an. Pentru fiecare regiune vom face o cloana cu una din comvinațiile de sex,vârstă și an. În tabela EurostatTOC putem accesa taote bazele de date prin codul de pe coloana numită "code".
+
+```{r}
+EurostatTOC <- getEurostatTOC()
+head(EurostatTOC)
+data <- getEurostatRCV(kod = "lfst_r_lfu3rt")
+head(data)
+```
+
+```{r}
+library("data.table")
+library("dplyr")
+mapdata <- dcast(setDT(data), geo ~ time + age + sex)
+#EU_NUTS@data = data.frame(EU_NUTS@data, mapdata[intersect(EU_NUTS@data[, "NUTS_ID"], mapdata[["geo"]]), ])
+EU_NUTS@data <- inner_join(EU_NUTS@data, mapdata, by = c("NUTS_ID" = "geo"))
+my_colours <- brewer.pal(5, "RdPu")
+breaks <- classIntervals(EU_NUTS@data[["2012_Y20-64_T"]], n = 5, style = "fisher", unique = TRUE)$brks
+plot <- plot(EU_NUTS, col = my_colours[findInterval(EU_NUTS@data[["2012_Y20-64_T"]], breaks, all.inside = TRUE)], axes = FALSE, border = NA)
+plot
+```
+
+
+# Exerciții
