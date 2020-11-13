@@ -433,60 +433,57 @@ a %p% b
 ```
 
 
-### Date/Time
-Dată – numărul de zile de la 01.01.1970 Date
-Timp – numărul de secunde de la 01.01.1970 Time
-POSIXt
-POSIXct – un număr întreg mare – as.POSIXct()
-POSIXlt – o listă cu informații precalculate – as.POSIXlt()
-strptime(„January 10, 2012 10:40”, „%B %d, %Y %H:%M”)
-difftime(d1, d2, units=„days”)
+### Simulare/Experiment
+
+Foarte important în procesul ștințific este reproducerea experimentelor și simulăriilor. Adeseori pentru a nu luat în cosniderare toate cazuriilor se alege un caz aleator sau se genează numere aleatorii când nu avem date de intrare precise. Pentru a avea un experiment ce poate fi reprodus se folosește funcția de setare a seed-ului:
+
 ```{r}
-a <- strptime("January 10, 2012 10:40", "%B %d, %Y %H:%M")
-b <- strptime("January 12, 2012 10:40", "%B %d, %Y %H:%M")
-print(a)
-summary(a)
-class(a)
-difftime(a, b, units="days")
+set.seed(10)
 ```
 
-### Simulare/Experiment
-rnorm(n, mean=0,std=1) – generare de n numere random
-set.seed(x) – setare seed la inceput ca experimentul sa poată fi reprodus
-sample(x, 10, replace=FALSE) – preia 10 valori random din x
-traceback() – apelurile de funcții până la eraore
-debug(funcție) – intră în modul debug când este apelată funcția
+Dacă dorim să generăm 10 numere aleatorii cu media 0 și deviația standard 1 folosim funcție:
+```{r}
+rnorm(10, mean=0, sd=1)
+```
+
+Dacă dorim să alege un număr de 3 valorii aleatoriu dintr-un vector fără înlocuire:
+```{r}
+sample(1:10, 3, replace=FALSE)
+```
+
+În caz de vă loviți de erori puteți folosi funcțiile traceback() și debug(funcție).
 
 
-## Exercitii
-### 1
+# Exercitii
+
+## 1
 Creati un vector x cu 20 de elemente, folosind functia rnorm.
 Hint: Puteti folosi mean=0, sd=0.5.
 
-### 2
+## 2
 Construiti un vector cu elementele din x de la pozițiile 3, 5, 7, 11, 13, 19.
 
-### 3
+## 3
 Construiti un vector cu elementele din x, mai puțin cele de la pozițiile 1, 5, 7, 16, 18.
 Hint: Folositi indecsi negativi
 
-### 4
+## 4
 Simulati 4 aruncari cu zarul, folosind functia 'sample'. Rezultatele
 vor fi afisate intr-un vector, ca rezultat al functiei.
 Hint: Parametrul replace, setat pe True, permite repetarea unei valori random.
 
-### 5
+## 5
 Sa presupunem ca vrem sa simulam aruncarea unei monede inechitabile, cu 2 fete. Aceasta moneda are o probabilitate de 0.3 pentru 'ban' si o probabilitate de 0.7 pentru 'stema'. Reprezentam 'banul' cu 0 si 'stema' cu 1. Construiti, folosind functia 'sample', un vector care simuleaza cele 100 de aruncari.
 Hint: In functia 'sample' se poate adauga un parametru extra, numit 'prob'.
 
-### 6
+## 6
 Se da urmatoarea lista:
 ```{r}
 x <- list(a = 1:10, beta = exp(-3:3), logic = c(TRUE,FALSE,FALSE,TRUE))
 ```
 Folosind lapply, calculati media pentru a, beta si logic.
 
-### 7
+## 7
 Se da codul de mai jos:
 ```{r}
 A<-c(1:9)

@@ -1,133 +1,750 @@
 ---
 title: "Știința Datelor Laborator 3"
-output: html_notebook
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 
-# Colectare
 
-## Descarcare fisiere
+```{r include=FALSE}
+library("knitr")
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+library("formatR")
+```
 
-## Fisiere locale
-
-### TXT format
-
-### CSV format
-
-### XLSX format
-
-### XML format
-
-### JSON format
-
-## Baze de date
-
-### RMySql
-
-## Pagini Web
-
-### url
-
-### xml
-
-### httr
-
-## Interfață de programare a aplicațiilor
-
-### Facebook
-
-### Twitter
-
-### Google 
-
-### Github
-
-## Alte Surse
-
-### Arhive
-
-### Alte Limbaje
-
-### Imagini
-
-### Hărți
-
-### Muzică
+```{r wrap-hook, include=FALSE}
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+```
 
 
+# ȘD - Scop Laboratorul 3
+Scopul laboratarului 3 de Știința Datelor este:
+
+  -  dezvoltarea capacității de filtrare a datelor
+  -  dezvoltarea capacității de structurare a datelor
+  -  dezvoltarea capacității de descriere a datelor
+  -  dezvoltarea capacității de a porni un proces ștințific de analiză
 
 
 # Filtrare
 
-## Descriere Filtrare
+Trebuie să avem în vedere că datele primite de la colectare în mare parte sunt brute sau neformatate. Conceptul de filtrare e un concept atât de eliminare, selecție cât și transformare. Pot fi eliminate informați incomplete, redundante, nerelevante întrebării noastre sau informații formatate greșit.
+
+Conform procesului științific trebuie oferite publice:
+  - datele îmediat după colectare
+  - procesul de eliminare cu argumente pentru fiecare eliminare din setul de date
+  - procesul de structurare
+  - datale finale după eliminare și înainte de analiză
+
+Acestea sunt necesare ca să poată fi validată și reprodusă munca ta științifică.
+Astfel, fiecare eliminare trebuie argumentată și notată.
+
+Probleme posbilie:
+  - măsurători greșite (Ex. măsurătoriile pentru umiditate au fost puse în coloana de temperatură)
+  - vaibile ce conțin rezultatul altor vairabile. (Ex. avem coloana de viteză medie, dar avem și coloanele de distanță parcursă și durată)
+  - unitatea de măsură în care a fost măsurată o variabile.
+  - date incomplete (Ex. NA)
+  - data irelevante (Ex. vrem să vedem șomajul pentru persoane în categoria de vârstă 20-25 dar avem date pentru persoane peste 25 de ani)
+
+## Set de date
+
+Vom folosit datele [ https://ec.europa.eu/eurostat/databrowser/view/educ_uoe_enrt01/default/table?lang=en] prezentate în laboraotrul 2 ca exemple pentru fișierele locale, dar datele erau deja filtrate și strucutrate. Astăzi le vom lua ca date brute.
+
+```{r message=FALSE, warning=FALSE}
+library("rgdal")
+library("RColorBrewer")
+library("sp")
+library("GISTools")
+library("classInt")
+library("maptools")
+library("SmarterPoland")
+```
+
+```{r}
+EurostatTOC <- getEurostatTOC()
+euro_dataset <- EurostatTOC[grep("Students enrolled in tertiary education by education level, programme orientation, sex, type of institution and intensity of participation", EurostatTOC$title),]
+data <- getEurostatRCV(kod = euro_dataset[1,"code"])
+head(data)
+class(data)
+```
+
 
 ## data.frame
 
+După cum se observă tipul datelor noaste este data.frame. Acesta este cel mai uzual mod de a memora date. Data.frame oferă majortiatea funcțiilor de sortare. Putem vedea valoriile prezente pe o coloana cu funcția unique.
+
+```{r}
+unique(data$worktime)
+unique(data$sex)
+unique(data$sector)
+```
+
+Să spunem că dorim datele despre  țară și numărul celor care urmează doctoratul în format FT în sectorul public după anul 2016 inclusiv.
+
+```{r}
+proc_data <- data[data$isced11=="ED8" & data$worktime=="FT" & data$sector=="PUBL" & data$time>=2016, c("geo", "value")]
+head(proc_data)
+```
+
+```{r}
+any(is.na(proc_data$value))
+```
+
+Din ultima instrucțiune observăm că avem valori care sunt "NA". Acestea reprezintă problema datelor incomplete. Soluțiile de rezolvare sunt următoare: eliminarea rânduriilor, înlocuirea cu o valoare prestabilită, înlocuirea cu media sau mediana valoriilor.
+
+Prima varaintă în eliminare rânduriilor este folosirea funcției which, care nu ia în considerare rânduriile care au valori de "NA" pe coloane date. Din această cauză suntem nevoiți să folosim și coloana value. 
+
+```{r}
+proc_data_2 <- data[which(data$isced11=="ED8" & data$worktime=="FT" & data$sector=="PUBL" & data$time>=2016 & data$value>=0), c("geo", "value")]
+any(is.na(proc_data_2$value))
+```
+
+Sau putem elimina rânduriile cu NA pe value de la început fonsindu-ne de operatorul "-".
+
+```{r}
+data_2 <- data[-which(is.na(data$value)), ]
+proc_data_2 <- data_2[which(data_2$isced11=="ED8" & data_2$worktime=="FT" & data_2$sector=="PUBL" & data_2$time>=2016), c("geo", "value")]
+any(is.na(proc_data_2$value))
+```
+
+
+O altă variantă este folosirea funcției complete.cases() care se uită la toate coloanele și păstrează doar rânduriile comple valide.
+
+```{r}
+data_2 <- data[complete.cases(data),]
+proc_data_2 <- data_2[data_2$isced11=="ED8" & data_2$worktime=="FT" & data_2$sector=="PUBL" & data_2$time>=2016, c("geo", "value")]
+any(is.na(proc_data_2$value))
+```
+
+Înlocuirea cu o nouă valoare se face cu ajutorul funcției is.na.
+```{r}
+data_2 <- data
+#data_2[is.na(data_2$value), "value"] <- 0
+#data_2[is.na(data_2$value), "value"] <- mean(data_2$value, na.rm = TRUE)
+data_2[is.na(data_2$value), "value"] <- class(quantile(data_2$value, probs = 0.5, na.rm = TRUE))
+proc_data_2 <- data_2[data_2$isced11=="ED8" & data_2$worktime=="FT" & data_2$sector=="PUBL" & data_2$time>=2016, c("geo", "value")]
+any(is.na(proc_data_2$value))
+```
+
+Următoarea operație disponibilă cu data.frame este sortarea. Pentru asta avem două funcții sort care ne returnează un vector sortat și order care returnează poziții elementelor într-un vector sortat.
+
+```{r}
+head(sort(data$value, decreasing = FALSE, na.last = TRUE), n=3)
+```
+```{r}
+head(data[order(data$value, decreasing = FALSE, na.last = TRUE),], n=3)
+```
+
+Uneori este necesară adăugarea unei noi coloane în tabel. În cazul nostru am vrea să vedem care este costul total al statului cu studenții în mediul universitar (ED6,ED7,ED8). Pentru un ED6 (licență) e 5 euro, pentru un ED7 (master) e 3 euro și pentru ED8 (doctorat) e 8 euro per student. Este necesar să adăugăm o nouă coloană. Pentru a calcula diferit costul vom avea 2 metode.
+
+```{r}
+data_2 <- data
+data_2$cost <- 0
+data_2[data_2$isced11=="ED6", "cost"] <- 5 * data_2[data_2$isced11=="ED6", "value"]
+data_2[data_2$isced11=="ED7", "cost"] <- 3 * data_2[data_2$isced11=="ED7", "value"]
+data_2[data_2$isced11=="ED8", "cost"] <- 8 * data_2[data_2$isced11=="ED8", "value"]
+sum(data_2$cost, na.rm = TRUE)
+```
+
+```{r}
+data_2 <- data
+data_2$cost <- ifelse(data_2$isced11=="ED6", 5 * data_2$value,
+              ifelse(data_2$isced11=="ED7", 3 * data_2$value,
+              ifelse(data_2$isced11=="ED8", 8 * data_2$value, 0)))
+sum(data_2$cost, na.rm = TRUE)
+```
+
+O altă instrucțiune interesantă este cea de intersectare a mai multor data frame-uri.
+
+```{r}
+head(merge(data, data_2), n=3)
+```
+
+
 ## data.table
+
+Un tip folosit pentru preformanță este data.table. Aceasta deține aceleași funcționalități ca data.frame, dar sunt  optimizate. Pentru a folosi data.table trebuie să încărcăm bibloteca "data.table". Operatorul [] pentru datable are 3 zone separate prin două virgule. Prima zonă este doar pentru filtrare, A doua este pentru funcții și adăugare de coloane noi, iar a treia ce nu am folosit până acum pentru data.frame este de grupare. Important data.table se copiază prin referință și modificăriile sunt permanente.
+
+```{r message=FALSE, warning=FALSE}
+library("data.table")
+```
+
+```{r}
+datatable <- data.table(data)
+head(datatable[worktime=="FT" & sector=="PRIV" & time>=2016 & geo=="AT",
+                 cost:=ifelse(isced11=="ED6", 5 * value,
+                       ifelse(isced11=="ED7", 3 * value,
+                       ifelse(isced11=="ED8", 8 * value, 0))),], n=3)
+```
+```{r}
+datatable <- data.table(data)
+datatable <- (datatable[ , cost:=ifelse(isced11=="ED6", 5 * value,
+                       ifelse(isced11=="ED7", 3 * value,
+                       ifelse(isced11=="ED8", 8 * value, 0))),])
+datatable[,sum(cost, na.rm = TRUE),]
+```
+
+```{r}
+datatable[isced11=="ED6" | isced11=="ED7" | isced11=="ED8" , list(sum=sum(cost,na.rm = TRUE), mean=mean(cost, na.rm = TRUE)), by=isced11]
+```
+
+```{r}
+head(datatable[ , .N , by=geo], n=3)
+```
+
+```{r}
+cols <- colnames(datatable)
+setkey(datatable, unit, worktime, sector, sex, isced11, geo, time, value)
+datatable_2 <- merge(datatable, datatable)
+head(datatable_2, n=3)
+```
+
 
 ## Biblioteca dplyr
 
+Cea mai utilizată varinată de filtrare este biblioteca dplyr care lucrează asupra data.frame și data.table Această bibliotecă prezintă 6 funcții simple utilizate în acest proces. Prima este de selecție în care putem selecta să filtreze anumită coloane, incluzându-le, prin declararea, excluzandu-le prin folosirea operatorului minus, sau un range de coloane,. Filter selecteaza informațiile (rânduriile) care respectă anumite condiții logice. Arrange sortează crescător sau descrescătoare în funcție de coloane. În caz de egalitate folosește următorul parametru. Rename redenumește o coloană. Mutate creează coloane noi sau poate transforma coloane existente. Ultima funcție este summarise care poate fi folosita doar după ce datele au fost grupate după anumite coloane cu funcția group_by. Mai departe el funcționează precum mutate dar funcțiile sum,mean vor fi făcute doar pe grupuri, iar rezultatul final va conține doar grupuriile și noile coloane.
+
+```{r message=FALSE, warning=FALSE}
+library("dplyr")
+```
+
+
+
 ### select
+
+Pentru datele noastre nu avem nevoie de unitatea de măsură.
+
+```{r}
+head(select(data, -unit), n=3)
+```
+```{r}
+head(select(data, isced11:value), n=3)
+```
 
 ### filter
 
+```{r}
+head(filter(data, worktime=="FT" & sector=="PRIV" & time>=2016 & geo=="AT"), n=3)
+```
+
+
 ### arrange
+
+```{r}
+head(arrange(data, desc(value), time), n=3)
+```
 
 ### rename
 
+```{r}
+head(rename(data, year=time), n=3)
+```
+
 ### mutate
+
+```{r}
+head(mutate(data, cost=ifelse(isced11=="ED6", 5 * value,
+                       ifelse(isced11=="ED7", 3 * value,
+                       ifelse(isced11=="ED8", 8 * value, 0)))), n=3)
+```
+
+```{r}
+head(mutate(data, cost=value-mean(value, na.rm = TRUE)), n=3)
+```
 
 ### summarise
 
+```{r warning=FALSE}
+data_2 <- group_by(data, isced11)
+head(summarise(data_2, sum_value=sum(value, na.rm=TRUE), mean_value=mean(value, na.rm=TRUE)), n=3)
+```
+
 ### operatorul %>%
+
+Un operator important de legat operații din bibloteca dplyr, asemănător unui pipe din bash.
+
+```{r warning=FALSE}
+head(data %>% filter(!is.na(value)) %>% arrange(desc(value), time) %>% group_by(isced11) %>% summarise(sum_value=sum(value)), n=3)
+```
+
+
+### Join
+
+Bibloteca are și variante pentru intersectare Pentru mai multe detalii folosiți ?join în consolă.
+
+```{r}
+head(inner_join(data, data_2, by=c("unit"="unit", "sector"="sector", "isced11"="isced11", "time"="time", "geo"="geo", "value"="value", "worktime"="worktime")), n=3)
+```
 
 ## Variabile Text
 
+Un tip de variabile speciale sunt cele text ce necesită o modificare mai atentă cu funcții speciale.
+Avem funcții precum tolower(), toupper() care convertesc la litere mici, sau mari. Facem acest lucru ca să fie mai ușor de factorizat.
+
+```{r}
+tolower("aLa")
+toupper("aLa")
+```
+
+Strsplit împarte în elemente de list in functie de separatorul pe care îl dăm.
+
+```{r}
+strsplit("ALA_BALA_poRtocala", "_")
+```
+
+Sub este un fel de găsește și înlocuiește în elementele vectorului, sub e doar pentru prima potrivire, în timp ece gsub este pentru toate.
+
+```{r}
+sub("ALA", "BALA", "ALA_BALA_poRtocala_ALA")
+gsub("ALA", "BALA", "ALA_BALA_poRtocala_ALA")
+```
+
+
+Grep găsește posițiile în vector care se potrivesc cu o expresie regulată. Daca setăm parametrul value vom primi valaoriile în loc de poziții.
+
+```{r}
+grep(".*ALA.*", c("ALA", "BALA", "poRtocala", "ALA"), value=FALSE)
+grep(".*ALA.*", c("ALA", "BALA", "poRtocala", "ALA"), value=TRUE)
+```
+
+Bibloteca stringr oferă alte funcții necesare precum nchar – numărul de caractere, substr – un subșir, paste  concateneaza mai multți vectori de caractere folosind un separator. Strtrim eliminimă spații albe de la început și final/.
+
+```{r message=FALSE, warning=FALSE}
+library("stringr")
+```
+
+```{r}
+nchar("ALA_BALA_poRtocala_ALA")
+substr("ALA_BALA_poRtocala_ALA", 5, 7)
+paste("ALA_BALA","poRtocala_ALA", sep="_")
+str_trim("     ALA_BALA_poRtocala_ALA      ")
+```
+
+
 ## Variabile Data/Timp Biblioteca lubridate
 
+Un alt timp de variabile speciale sunt cele care se referă la timp și date. Prima varianta e să folosim format și să învățăm toate literele de urmează după procent sau putem folosi biblioteca lubridate care necesită doar să spui ordinea în care sunt puse informația iar în spate va căuta singură prin text. Avem funcții pentru ziua săptămânii anul și respectiv luna. Putem folosi operații aritmetice. Update pentru a actualiza anumite componente și interval pentru a vedea diferența între zile.
 
+```{r message=FALSE, warning=FALSE}
+library("lubridate")
+```
 
+```{r}
+bday <- ymd_hms("1994 ala 05 bala 22 faa 06 rrrr 30 okdo 59")
+wday(bday)
+year(bday)
+month(bday)
+majorat <- bday + years(18) + days(4) + hours(5) + minutes(40)
+update(majorat, hour=19)
+secunde <- int_length(interval(bday, majorat))
+as.numeric(as.duration(secunde), "days")
+```
 
 # Structurare
 
-## Descriere Structurare
+Mai întăi să definim ce se înțelege prin date structurate.  Noi facem un experimente în care avem măsurători în funcție de o variabilă definitorie unică la momentul măsurătorii. Fiecare element măsurat este considerat o variabilă.  Fiecare colonă din datele noastre trebuie să reprezinte o varaibilă. Fiecare rând reprezintă o observație , adică o măsurare pentru acele varibile și observația este pe un singur rând. O celulă reprezintă o singură valaore, valaorea unei variabile pentru o observație. Fiecare tabel reprezintă un experiment și trebuie să aibă fișierul lui. Tabele multiple ce oferă informații asupra aceluiași experiment dar nu preprezintă neapărat măsurători trebuie să aibă moduri de conectare între ele. Trebuie să avem antet pentru tabelul nostru cu nume explicite. La final aceste date trebuie să fie pregătite pentru analiză fără a fi nevoie de modificări ulterioare. Putem faci orice tip de analiză pe ele.
+
+
+## Idei principale Structurare
+
+  - Fiecare variabilă este prezentă într-o singură coloană
+  - Fiecare observație diferită a unei variabile este într-un singur rând (fiecare observație conține toate variabilele măsurate)
+  - O celulă o singură valoare
+  - Un tabel pe tip de experiment
+  - Tabelele multiple trebuie conectate printr-o coloana
+  - Trebuie să aibă antet
+  - Numele coloanelor trebuie să fie descriptive
+  - Fiecare tabel are fișierul lui
+  - Datele sunt pregătite pentru analiză
 
 ### Documentare proces
 
+Tot acest proces prin care ajungem de la date brute la date structurate trebuie docuemnte și trecute într-un document numit în engleză Code Book. Acesta conține informații despre variabile nume și unități de măsură. Lucruri pe care nu le putem punea neapărat în tabele. Conține informații despre deciziile pe care le-am luat de colectare,filtrare și structurare asupra datelor brute. Conține informații despre modul în care am făcut experimentele și am colectat datele. Alături de această documentare se va pune și scriptul aferent cu datele brute și datele structurate pentru ca terții să poată verifica rezultatul scriptului asupra datelor colectate este reprezentat prin datele structurate. Scriptul nu trebuie să primeasca alt parametru decât datele colectate.
+
+  - Informații despre variabile (unități de măsură)
+  - Informații despre deciziile pe care le-au luat asupra datelor brute (argumente)
+  - Informații despre arhitectura experimentului
+  - Informații despre colectarea datelor
+  - Un script care transformă datele brute în date structurate
+
 ### Cele 5 probleme
+
+Cele 5 mari probleme. Coloane sunt valori nu varaibile, gen anul. Coloanele conțin mai multe variabile. Varaibile sunt și pe rânduri și pe coloane. Datele de la mai multe experiemnte sunt in acelasi tabel. Sau experiemntul este in mai multe tabele.s
+
+  - (P1) Coloanele sunt valori, nu variabile
+  - (P2) Coloanele conțin mai multe variabile
+  - (P3) Variabile sunt și pe rânduri și pe coloane
+  - (P4) Mai multe experimente în același tabel
+  - (P5) Același experiment în mai multe tabele
+
 
 ## Biblioteca tidyr
 
+Cea mai utilizată librărie creată chiar de cel ce a definit termenul de date structurate.
+
+```{r message=FALSE, warning=FALSE}
+library("tidyr")
+```
+
+
+
 ### gather
+
+Gather este rezorvarea P1 coloane sunt valori. Preia mai multe coloane si le pune numele lor in coloana variabile și valoriile în coloana valori. Prin bibloteca ce preia datele de pe eurostat se face automat și o ordoanre a datelor, dar date iniițiale pe eurostat dacă le descărcați are o coloană pentru fiecare an, unde espre rezentat numărul de persoane ca valaore. Vom întoarce procesul înapoi și după vom folosi gather să rezolvăm problem ainițială.
+```{r}
+data_spread <- spread(data, key="time", value="value")
+head(data_spread)
+```
+
+```{r}
+data_2 <- gather(data_spread, "2005":"2018", key="year", value="PersonsNumber")
+head(data_2)
+```
 
 ### spread
 
+A doua  problema este rezolvată de funcția spread varaibilele ce vor deveni coloane sunt in coloana variabile iar valoriile sunt in coloana valori. P3 e rezolvat de gather și spread.  Putem lua exemplu "greșit" în care considerăm anii o variabilă.
+```{r}
+data_spread <- spread(data, key="time", value="value")
+head(data_spread)
+```
+
 ### drop_na
+
+
+Următoarele funcții sunt pentru ștergereea na sau înlocuirea na cu anumite valori. 
+
+drop_na elimină rânduri cu NA. 
+```{r}
+data_3 <- drop_na(data_2)
+head(data_3)
+```
+
+fill înlocuiește cu valori de mai sus din table sau de mai jos.
+
+```{r}
+data_3 <- fill(data_spread, "2016", .direction="down")
+head(data_3[,c("2013","2014","2015","2016")])
+```
+
+replace_na înlocuiește cu valori pe coloanele date.
+
+```{r}
+data_3 <- replace_na(data_spread, list("2015"=2,"2016"=3))
+head(data_3[,c("2013","2014","2015","2016")])
+```
+
 
 ### separate
 
+Separate e folosit când avem mai multe valori într-o singură celulă. Separa dupa alfanumerice.
+În prima fază vom uni coloanele cu ani și toate valoriile per an.
+```{r}
+data_spread_col <- colnames(data_spread)
+data_spread_col <- data_spread_col[7:15]
+data_3 <- unite(data_spread,data_spread_col, col="Years", sep="_", remove=TRUE) 
+head(data_3)
+```
+
+```{r}
+data_4 <- separate(data_3, "Years", into = data_spread_col, sep="_")
+head(data_4)
+```
+
 ### separate_rows
+
+Separete_row când avem pe același rând mai multe observații. Separă după o coloană în duncție de separatoare alfanumerice.
+
+```{r}
+data_4 <- separate_rows(data_3, "Years", sep="_")
+head(data_4)
+```
+
+
 
 ### unite
 
+Unite unește două coloane cu separator. Când Variabila e pe mai multe coloane. Remove elimină coloanele vechi.
+
+```{r}
+data_spread_col <- colnames(data_spread)
+data_spread_col <- data_spread_col[7:15]
+data_3 <- unite(data_spread, data_spread_col, col="Years", sep="_", remove=TRUE) 
+head(data_3)
+```
 
 
 
-# Descriere - posibil dus în laboratorul 2
 
-## Detalii Text
 
+# Descriere
+
+```{r}
+summary(data)
+str(data)
+quantile(data$value, probs=c(0.1,0.3,0.5,0.7), na.rm = TRUE)
+table(data$geo)
+```
 ## Detalii Grafice - biblioteca ggplot2
 
-### primitive
+Pentru grafice vom folosi bibloteca ggplot2 pentru care avem următorul chatsheet [https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf]. 
 
-### distribuție variabilă
+```{r message=FALSE, warning=FALSE}
+library("ggplot2")
+library("ggplot2movies")
+library("maps") 
+set.seed(20) 
+```
 
-### două variabile continue
+ggplot2 conține 3 concepete: cel de date pe care îl transmiteți la început cu ajutorul funcției ggplot, cel a sistemului de coordonate și cel de geom prin care spui cum reprezinți datele în sistemul cartezian. Vom inițializa toate variabilele din chatsheet. Seturiile de date sutn descrise în felul următor:
+  - mpg - date economice despre 38 de modele de mașini: hwy - mile pe autostrada per galon, cty mile în oraș per galon, classs - tipul mașinii, fl - tipul de combustibil
+  - map - harta regiuniilor din america prin latitiudine și longitudine
+  - seals - date despre deplasăriile unei foci
+  - diamonds - date despre 54 000 de diamante: price - preț, carte - carate, color - culoare de la D la J, clarity - claritate de la I1 la IF și dimensiuniile prin x,y,z
+  - economics - date despre somaj in america: date - data la care au fost introduse datele, unemploy - numărul de oameni in somaj, pop - populația totală
+  - movies - date despre filmele postate pe imdb: year: anul, rating - scorul date de utilizatori
+  - USArrests - date despre arestăriile din statele americane
 
-### variabile discretă-continuă
+```{r}
+a <- ggplot(mpg, aes(hwy))
+b <- ggplot(mpg, aes(fl))
+c <- ggplot(map_data("state"), aes(long, lat))
+d <- ggplot(economics, aes(date, unemploy))
+e <- ggplot(seals, aes(x = long, y = lat))
+f <- ggplot(mpg, aes(cty, hwy))
+g <- ggplot(mpg, aes(class, hwy))
+h <- ggplot(diamonds, aes(cut, color))
+i <- ggplot(movies, aes(year, rating))
+j <- ggplot(economics, aes(date, unemploy))
+df <- data.frame(grp = c("A", "B"), fit = 4:5, se = 1:2) 
+k <- ggplot(df, aes(grp, fit, ymin = fit-se, ymax = fit+se))
+murder_data <- data.frame(murder = USArrests$Murder, state = tolower(rownames(USArrests))) 
+state_map <- map_data("state")
+l <- ggplot(murder_data, aes(fill = murder))
+seals_2 <- seals
+seals_2$z <- with(seals_2, sqrt(delta_long^2 + delta_lat^2)) 
+```
 
-### variabile discretă-discretă
 
-### distribuție două variabile continue
+Vom trece prin categoriile de geom pe rând.
 
-### hărți
+### Primitive
+
+Prima primitivă este cea de polygon. Aceasta desenează un polygon folosind pentru x prima coloana dată și pentru y a doua coloană. Folosind group vom grupa datele și vom face mai multe poligoane. Această funcție e necesară când dorim să aăugăm anumite zone în grafic ca zone de interes, sau dorim să colorăm diferit diferite grupuri folosind parametrul value.
+
+```{r}
+c + geom_polygon(aes(group = group)) + geom_polygon(data = data.frame(lat=c(30,34,34,30),long=c(-82,-82,-89,-89)), aes(fill=1))
+```
+
+Primitava path este leagă în ordinea în carea a primit (sa în funcție de coloana x) valoriile printr-o linie.
+
+```{r}
+d + geom_path(lineend="butt", linejoin="round", linemitre=1)
+```
+
+Primitiva ribbon este bună atunci când vrei să adaugi deviația standard în discuție și vrei să vezi pe unde s-ar putea încadra valoriile.
+
+
+```{r}
+d + geom_ribbon(aes(ymin=unemploy - 900, ymax=unemploy + 900))
+```
+
+
+### Distribuție variabilă continuă
+
+Pentru afișarea unei distribuții a unei varaibile continue sunt 2 funcții prinicipale, density și histogram. Histograma e folosită când vrei să consideri intervale pentru varibila respectivă. Aceste funcții transmit zona în carea variabila ta se concentrează. Poate scoate în evidență grupuri, mediana sau deviația standard. De exemplu în cazul nostru ni se transmite faptul că sunt două grupuri mari de mașini unele care fac 15 mile per galon pe autostrada și unele care fac 25, spunând astfel că ar trebui să facem o cercetare să vedem diferența dintre cele două grupuri. Histograma ne prezintă că cele mai multe mașini fac între 22.5 și 27.5 mile per galon pe autostradă
+
+```{r}
+a + geom_density(kernel = "gaussian")
+```
+
+```{r}
+a + geom_histogram(binwidth = 5)
+```
+
+### Distribuție variabilă discretă
+
+În cazul varaibilelor discretă cel mai bun grafic este cel prin bar care este asemător cu cel al histogramei numai că nu conține un interval de valori și doar o valoare. Acest tip este folositor pentru a vedea dacă avem o distribuție uniformă între grupuriile noastre discrete. Din păcate din acest grafic reiese că nu avem.
+
+```{r}
+b + geom_bar()
+```
+
+
+### Două variabile continue
+
+Pentru momentul când avem două variabile continue cea mai frecventă tip de geom o să fie point.
+
+```{r}
+f + geom_point()
+```
+Desigur afiașarea nu reprezintă cu exactitate datele, pentru că sunt mai multe intrări cu aceleași valori pentru ambele variabile. PEntru asta se folosește funcții precum jitter care oferă un pic de deviere între valori.
+
+```{r}
+f + geom_jitter()
+```
+O altă funcție grafică importantă este cea de calculare a cuantilelor pentru graficul nostru și tragerea liniei reprezentative. De exemplu dorim să vedem linia sub care se află 90% dintre valori, mediana valoriilor și linia sub care sunt doar 10% dintre valori. Acestaă abordare este deseori mai potrivită decât cea folosind ribbon cu deviația standard pentru că poți observa o concentrare de valori mai ușor. În cazul nsotru putem observa o concentrare în zona valorii de 13 pentru cty și 13 pentru hwy.
+
+```{r warning=FALSE}
+f + geom_jitter() + geom_quantile(method = "rqss", color="red", quantiles = c(0.1,0.5,0.9))
+```
+O altă utilizare simplistă este smooth care produce o regresie liniară asupra datelor noastre.
+
+```{r}
+f + geom_jitter() + geom_smooth(method = lm)
+```
+
+
+### Variabile discretă-continuă
+
+Pentru reprezentarea unei variabile continue în funcție de una discretă standardul neoficial din știința datelor la care s-a ajuns este cel de boxplot. Boxplot oferă următoarele detalii trei cunatile (0.25, 0.5(mediana), .075) reprezentate prin limita de sus a dreptunghiului (0.75), limita de jos (0.25) și linia din interiorul dreptunghiului(0.5-mediana). Pentru înțelege liniile trase în sus și jos trebuie calculat IQR care este diferența dinter cuantila de 0.75 și cea de 0.25. Liniile au lungimea până la cea mai mare, respectiv cel mai mică valaore dar nu mai mult de 1.5* IQR făță de dimita de sus sau de jos. Restul punctelor sunt ce nu se încadrează în această zonă sunt reprezentate individual. Boxplot sunt foarte eficiente pentru a putea observa diferențe statistice relevante între grupuri. De exemplu în grafic se obsevă o diferență între mașinile cu două locuri (2seater) și mașinile camionetă (pickup). Datorită infromațiilor relevante pe care le oferă asupra datelor și faptul că sunt așa compacte boxplot a devenit acest standard neoficial.
+
+```{r}
+g + geom_boxplot()
+```
+
+O metodă care oferă astfel de perspectivă dar mai puțin compactă este violin.
+
+```{r}
+g + geom_violin(scale = "area")
+```
+
+
+### Variabile discretă-discretă
+
+Pentru o distribuție a două varaibile discrete sunt două funcții principale. Mai intuitivă este cea de count care reprezintă prin mărimea punctului numărul de valori aflate în acea zonă.
+
+```{r}
+h + geom_count()
+```
+
+Cea de a doua este jitter, folosită și înainte dar care în cazul discret oferă o aglomerație a valoriilor în acel grup, fiind o viziune mai grafică.
+
+```{r}
+h + geom_jitter()
+```
+
+### Distribuție două variabile continue
+
+Pentru a face o distribuție a două variabile continue, echivalentul histogramei de la o singură varaibilă continuă este bin2d, care va reprezenta prin culoare câte valori se află în acea zonă.
+
+```{r}
+i + geom_bin2d(binwidth = c(5, 0.5))
+```
+
+### Hărți
+
+Un alt mod de a afișa datele mai grafic este pe hărți folosind map. Trebuie setată doar coloana din date ce va fi id pentru hartă. Mai jos sunt reprezentate numărul de crime la 100 000 de locuitori din statele din america.
+
+```{r}
+l + geom_map(aes(map_id = state), map = state_map) + expand_limits(x=state_map$long, y=state_map$lat)
+```
+
+
+# Exerciții
+
+Pentru rezolvarea exercițiilor vom folosi pentru aflarea variabilelor documentul [https://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2009:086:0001:0169:EN:PDF], iar datele noastr sunt reprezentate de [https://ec.europa.eu/eurostat/cache/metadata/en/cei_cie010_esmsip2.htm#meta_update1581690031622]. De reținut că datele sunt pentru economie circulară [https://en.wikipedia.org/wiki/Circular_economy].
+
+## Colectarea datelor
+
+```{r}
+ex_data <- getEurostatRCV(kod = "cei_cie010")
+```
+
+## 1. Eliminați datele ce pot fi recalculate
+
+Observații denumiriile pentru țăti din coloana geo:
+
+```{r}
+unique(ex_data$geo)
+```
+
+Eliminați rânduriile ce conțin formațiuni de state și puneți rezultatul în ex1_data.
+
+```{r}
+ex_data_1 <- ex_data %>% filter(geo!="EU27_2007" & geo!="EU27_2020" & geo!="EU28")
+```
+
+## 2. Separarea variabilelor
+
+Observați valoriile unice din coloana indic_sb:
+
+```{r}
+unique(ex_data_1$indic_sb)
+```
+
+Aceste valori sunt varibile folosiți funcția spread pentru a forma coloane cu aceste variabile. Salvați în ex_data_2.
+
+```{r}
+ex_data_2 <- ex_data_1 %>% spread(key = indic_sb, value = value)
+```
+
+
+## 3. Redenumirea Variabilelor
+
+Dacă urmărim documentul vom vedeacă următoarele denumiri sunt pentru coduriilor varaibilelor
+V12150 - Value added at factor cost (Mio Euro) - VFC_MilE
+V12151 - Value added at factor cost - percentage of gross domestic product (GDP) - VFC_GDP
+V15110 - Gross investment in tangible goods (Mio euro) GITG_MilE
+V15111 - Gross investment in tangible goods - percentage of gross domestic product (GDP) - GITG_GDP
+V16110 - Number of persons employed - NPE
+V16111 - Persons employed - percentage of total employment - NPE_E
+
+Folosiți ultimele valori pentru denumirea coloanelor în ex_data_3.
+
+```{r}
+ex_data_3 <- ex_data_2 %>% rename(VFC_MilE = V12150, VFC_GDP = V12151, GITG_MilE = V15110, GITG_GDP = V15111, NPE = V16110, NPE_E = V16111)
+```
+
+## 3. Afișați numărul de angajați
+
+Afișați numărul de angajați pe 2014 per fiecare țară sub formă de histogramă folosind geom_bar(stat = "identity").
+
+```{r}
+ex_data_4 <- ex_data_3 %>% filter(time=="2014") 
+ex_data_4 <- ex_data_4[,c("geo","NPE")]
+gg_ex_data_4 <- ggplot(ex_data_4, aes(geo, NPE))
+gg_ex_data_4 + geom_bar(stat = "identity")
+```
+
+## 5. Afiașți procentul de angajați în domeniul dealungul aniilor în România
+
+Dacă observăm:
+```{r}
+ex_data_5 <- ex_data_3
+str(ex_data_3)
+```
+
+Variabila time conține valori sub formă de caractere. Va trebuie să convertim la număr valoriile respective cu ajutorul funcției as.numeric() .
+
+```{r}
+ex_data_5[,"time"] <- as.numeric(ex_data_5[,"time"])
+```
+
+Selectăm doar datele despre România și coloanele time și NPE_E pe care le afișăm cu line și point.
+```{r}
+ex_data_5 <- ex_data_5[ex_data_5$geo=="RO",]
+gg_ex_data_5 <- ggplot(ex_data_5, aes(time, NPE_E))
+gg_ex_data_5 + geom_point() + geom_line()
+```
+## 6. Afișați evoluția procentului de anajabilitate în sector
+
+Afișați evoluția procentului de anajabilitate în sector pentru toate țăriile pe fiecare an.
+Variabila discretă este time și cea continua NPE_E.
+
+```{r}
+ex_data_6 <- ex_data_3
+#ex_data_6[,"time"] <- as.numeric(ex_data_6[,"time"])
+gg_ex_data_6 <- ggplot(ex_data_6, aes(time, NPE_E))
+gg_ex_data_6 + geom_boxplot()
+```

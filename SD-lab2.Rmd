@@ -161,8 +161,9 @@ head(xmlSApply(root_node, xmlValue), n=1)
 #GET(handle=pagina, path="/")
 ```
 ## Interfață de programare a aplicațiilor
+O altă metodă de colectare a datelor de pe platforme mai complexe este prin intermediul interfețelor de programare a aplicațiilor. Mare parte din ele se fac prin Oauth, dar am pus link-uri pentru fiecare implementare pentru diferite platforme. Se poate căuta „platformă R programming API package” , este un mod de analiza chiar datele voastre personale sau a prieteniilor.
 
-### Facebook
+Facebook[https://cran.r-project.org/web/packages/Rfacebook/], Twitter [https://www.rdocumentation.org/packages/twitteR], Google [https://cran.r-project.org/web/packages/googleAuthR/vignettes/setup.html], Github[https://cran.r-project.org/web/packages/httr/vignettes/api-packages.html]
 
 
 
@@ -673,3 +674,18 @@ plot
 
 
 # Exerciții
+
+## 1. Pornind de la baza de date din capitolul Eurostat, calculati urmatoarele:
+ - media varstei barbatilor someri din zona AT
+ - mediana varstei femeilor somere din zona AT1
+
+## 2.
+Biroul australian de statistică a estimat că în 2012, în Australia erau 22.683.600 de locuitori, cu o creștere de 1.6% față de anul trecut. Considerând că această rată de creștere e constantă de-a lungul anilor, calculați care era populația in 2007.
+
+## 3. Folosind ca exemplu albumele de la capitolul 'Probabilitați', calculați:
+ - Care este probabillitatea ca, ascultând 50 de melodii aleatorii de pe cele 2 albume, fix 5 sa fie cântate de Adrian Minune sau de Vali Vijelie?
+ -  Care este probabillitatea ca o melodie cântata de Adrian Minune sau de Mihaiță Piticul sa fie o melodie de pe albumul L’ESPERANCE HITS 2008 în același timp.
+
+## 4. Considerând informațiile din capitolul 'Multiple Intruction detection systems'.
+ - Care este probabilitatea ca primul IDS să dea false positive și al doilea false negative în cazul unui pachet de date?
+ - Care este probabilitatea ca un pachet legitim să fie considerat virus?
