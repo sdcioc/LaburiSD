@@ -674,7 +674,6 @@ unique(ex_data$geo)
 Eliminați rânduriile ce conțin formațiuni de state și puneți rezultatul în ex1_data.
 
 ```{r}
-ex_data_1 <- ex_data %>% filter(geo!="EU27_2007" & geo!="EU27_2020" & geo!="EU28")
 ```
 
 ## 2. Separarea variabilelor
@@ -682,13 +681,11 @@ ex_data_1 <- ex_data %>% filter(geo!="EU27_2007" & geo!="EU27_2020" & geo!="EU28
 Observați valoriile unice din coloana indic_sb:
 
 ```{r}
-unique(ex_data_1$indic_sb)
 ```
 
 Aceste valori sunt varibile folosiți funcția spread pentru a forma coloane cu aceste variabile. Salvați în ex_data_2.
 
 ```{r}
-ex_data_2 <- ex_data_1 %>% spread(key = indic_sb, value = value)
 ```
 
 
@@ -705,7 +702,6 @@ V16111 - Persons employed - percentage of total employment - NPE_E
 Folosiți ultimele valori pentru denumirea coloanelor în ex_data_3.
 
 ```{r}
-ex_data_3 <- ex_data_2 %>% rename(VFC_MilE = V12150, VFC_GDP = V12151, GITG_MilE = V15110, GITG_GDP = V15111, NPE = V16110, NPE_E = V16111)
 ```
 
 ## 3. Afișați numărul de angajați
@@ -713,31 +709,23 @@ ex_data_3 <- ex_data_2 %>% rename(VFC_MilE = V12150, VFC_GDP = V12151, GITG_MilE
 Afișați numărul de angajați pe 2014 per fiecare țară sub formă de histogramă folosind geom_bar(stat = "identity").
 
 ```{r}
-ex_data_4 <- ex_data_3 %>% filter(time=="2014") 
-ex_data_4 <- ex_data_4[,c("geo","NPE")]
-gg_ex_data_4 <- ggplot(ex_data_4, aes(geo, NPE))
-gg_ex_data_4 + geom_bar(stat = "identity")
 ```
 
 ## 5. Afiașți procentul de angajați în domeniul dealungul aniilor în România
 
 Dacă observăm:
 ```{r}
-ex_data_5 <- ex_data_3
-str(ex_data_3)
+#ex_data_5 <- ex_data_3
+#str(ex_data_5)
 ```
 
 Variabila time conține valori sub formă de caractere. Va trebuie să convertim la număr valoriile respective cu ajutorul funcției as.numeric() .
 
 ```{r}
-ex_data_5[,"time"] <- as.numeric(ex_data_5[,"time"])
 ```
 
 Selectăm doar datele despre România și coloanele time și NPE_E pe care le afișăm cu line și point.
 ```{r}
-ex_data_5 <- ex_data_5[ex_data_5$geo=="RO",]
-gg_ex_data_5 <- ggplot(ex_data_5, aes(time, NPE_E))
-gg_ex_data_5 + geom_point() + geom_line()
 ```
 ## 6. Afișați evoluția procentului de anajabilitate în sector
 
@@ -745,8 +733,4 @@ Afișați evoluția procentului de anajabilitate în sector pentru toate țării
 Variabila discretă este time și cea continua NPE_E.
 
 ```{r}
-ex_data_6 <- ex_data_3
-#ex_data_6[,"time"] <- as.numeric(ex_data_6[,"time"])
-gg_ex_data_6 <- ggplot(ex_data_6, aes(time, NPE_E))
-gg_ex_data_6 + geom_boxplot()
 ```

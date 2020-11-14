@@ -14,6 +14,12 @@ Scopul laborataorelor de Știința Datelor este formarea următoarelor capacită
 - Procesare a datelor
 - De cercetare
 
+# ȘD - Scop Laboratorul 1
+Scopul laboratarului 1 de Știința Datelor este:
+
+  -  dezvoltarea capacității de programare în Limbajul R
+
+
 ## Limbajul R
 
 ### Istorie
