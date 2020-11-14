@@ -1,9 +1,9 @@
 ---
 title: "Știința Datelor Laborator 2"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
   html_notebook: default
 ---
 
@@ -593,7 +593,7 @@ print(probability_p_tff_ro)
 print(probability_p_tff_test)
 ```
 
-## Utilitate: Multiple Intruction detection systems
+## Utilitate: Multiple Intrusion detection systems
 
 O utilitate în Rețelistică este acea de folosire de mai multe IDS-uri la intrarea în rețea de la difereți vendori. Întrebare cu cât este mai bună prevenția dacă folosim mai multe IDS-uri decât unul singur. Trebuie să calculăm probabilitatea ca un virus să treacă de  două IDS-uri.
 Fie două IDS-uri cu următoarele propirietăți: 
@@ -686,6 +686,6 @@ Biroul australian de statistică a estimat că în 2012, în Australia erau 22.6
  - Care este probabillitatea ca, ascultând 50 de melodii aleatorii de pe cele 2 albume, fix 5 sa fie cântate de Adrian Minune sau de Vali Vijelie?
  -  Care este probabillitatea ca o melodie cântata de Adrian Minune sau de Mihaiță Piticul sa fie o melodie de pe albumul L’ESPERANCE HITS 2008 în același timp.
 
-## 4. Considerând informațiile din capitolul 'Multiple Intruction detection systems'.
+## 4. Considerând informațiile din capitolul 'Multiple Intrusion detection systems'.
  - Care este probabilitatea ca primul IDS să dea false positive și al doilea false negative în cazul unui pachet de date?
  - Care este probabilitatea ca un pachet legitim să fie considerat virus?

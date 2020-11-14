@@ -1,9 +1,9 @@
 ---
 title: "Știința Datelor Laborator 1"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
   html_notebook: default
 ---
 # ȘD - Scop
@@ -15,8 +15,6 @@ Scopul laborataorelor de Știința Datelor este formarea următoarelor capacită
 - De cercetare
 
 ## Limbajul R
-expression(c^2 == a[1]^2 + b[1]^2)
-$c^2 == a[1]^2 + b[1]^2$
 
 ### Istorie
 R se trage din limbajul S, creat în 1976 la BELL, special pentru analiză statistică. Acesta a fost făcut în Fortran. Echivalentul lui din ziua de astăzi este Splus, care este proprietar. Dezvoltarea R a început în 1992 și s-a terminat o dată cu nașterea R pe 29 februarie 2000 . Avantajul lui este că e open-source și a transpus multe părți din Fortran în C. În ziua de astăzi este considerat cel mai specific limbaj pentru statistică.

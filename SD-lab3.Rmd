@@ -1,8 +1,10 @@
 ---
 title: "Știința Datelor Laborator 3"
 output:
-  pdf_document: default
+  html_document:
+    df_print: paged
   html_notebook: default
+  pdf_document: default
 ---
 
 
@@ -400,7 +402,7 @@ library("tidyr")
 
 ### gather
 
-Gather este rezorvarea P1 coloane sunt valori. Preia mai multe coloane si le pune numele lor in coloana variabile și valoriile în coloana valori. Prin bibloteca ce preia datele de pe eurostat se face automat și o ordoanre a datelor, dar date iniițiale pe eurostat dacă le descărcați are o coloană pentru fiecare an, unde espre rezentat numărul de persoane ca valaore. Vom întoarce procesul înapoi și după vom folosi gather să rezolvăm problem ainițială.
+Gather este rezorvarea P1 coloane sunt valori. Preia mai multe coloane si le pune numele lor in coloana variabile și valoriile în coloana valori. Prin bibloteca ce preia datele de pe eurostat se face automat și o ordoanre a datelor, dar date iniițiale pe eurostat dacă le descărcați are o coloană pentru fiecare an, unde espre rezentat numărul de persoane ca valaore. Vom întoarce procesul înapoi și după vom folosi gather să rezolvăm problema inițială.
 ```{r}
 data_spread <- spread(data, key="time", value="value")
 head(data_spread)
@@ -562,7 +564,7 @@ d + geom_ribbon(aes(ymin=unemploy - 900, ymax=unemploy + 900))
 
 ### Distribuție variabilă continuă
 
-Pentru afișarea unei distribuții a unei varaibile continue sunt 2 funcții prinicipale, density și histogram. Histograma e folosită când vrei să consideri intervale pentru varibila respectivă. Aceste funcții transmit zona în carea variabila ta se concentrează. Poate scoate în evidență grupuri, mediana sau deviația standard. De exemplu în cazul nostru ni se transmite faptul că sunt două grupuri mari de mașini unele care fac 15 mile per galon pe autostrada și unele care fac 25, spunând astfel că ar trebui să facem o cercetare să vedem diferența dintre cele două grupuri. Histograma ne prezintă că cele mai multe mașini fac între 22.5 și 27.5 mile per galon pe autostradă
+Pentru afișarea unei distribuții a unei varaibile continue sunt 2 funcții prinicipale, density și histogram. Histograma e folosită când vrei să consideri intervale pentru varibila respectivă. Aceste funcții transmit zona în carea variabila ta se concentrează. Poate scoate în evidență grupuri, mediana sau deviația standard. De exemplu în cazul nostru ni se transmite faptul că sunt două grupuri mari de mașini unele care fac 15 mile per galon pe autostrada și unele care fac 25, spunând astfel că ar trebui să facem o cercetare să vedem diferența dintre cele două grupuri. Histograma ne prezintă că cele mai multe mașini fac între 22.5 și 27.5 mile per galon pe autostradă.
 
 ```{r}
 a + geom_density(kernel = "gaussian")
