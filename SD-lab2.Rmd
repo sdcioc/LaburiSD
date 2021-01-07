@@ -547,7 +547,7 @@ Folsind albumul L'ESPERANCE HITS 2008, ascultând 50 de melodii aleatoriu după 
 
 ```{r}
 binom_probability <- function(p,s,n) {
-  choose(n, s) * p^s * (1-prob_adrian_esperance)^(n-s)
+  choose(n, s) * p^s * (1-p)^(n-s)
 }
 binom_probability(prob_adrian_esperance, 14, 50)
 ```
